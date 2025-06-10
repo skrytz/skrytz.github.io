@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Golden Gate Analysis - SPY</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .header p {
+            margin: 5px 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        .content {
+            padding: 40px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card.positive {
+            border-left: 4px solid #27ae60;
+        }
+        .stat-card.negative {
+            border-left: 4px solid #e74c3c;
+        }
+        .stat-number {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .positive .stat-number {
+            color: #27ae60;
+        }
+        .negative .stat-number {
+            color: #e74c3c;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+        .chart-section {
+            margin: 40px 0;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .chart-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .insights {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        .insights h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.4em;
+        }
+        .insights p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .comparison-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        .pattern-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .pattern-card.positive {
+            border-top: 4px solid #27ae60;
+        }
+        .pattern-card.negative {
+            border-top: 4px solid #e74c3c;
+        }
+        .pattern-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .positive .pattern-title {
+            color: #27ae60;
+        }
+        .negative .pattern-title {
+            color: #e74c3c;
+        }
+        .data-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin: 30px 0;
+        }
+        .table-header {
+            background: #34495e;
+            color: white;
+            padding: 20px;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .positive-event {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .negative-event {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .methodology {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        .methodology h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .code-example {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Golden Gate Analysis</h1>
+            <p>SPY Momentum Continuation Probability Study</p>
+            <p>ATR-Based Level Touch Analysis</p>
+            <p>Data Period: January 23, 2025 - June 9, 2025 | 94 Trading Days</p>
+        </div>
+
+        <div class="content">
+            <div class="stats-grid">
+                <div class="stat-card positive">
+                    <div class="stat-number">57.1%</div>
+                    <div class="stat-label">Positive Golden Gate<br>+38.2% → +61.8% ATR</div>
+                </div>
+                <div class="stat-card negative">
+                    <div class="stat-number">71.1%</div>
+                    <div class="stat-label">Negative Golden Gate<br>-38.2% → -61.8% ATR</div>
+                </div>
+                <div class="stat-card positive">
+                    <div class="stat-number">42</div>
+                    <div class="stat-label">Positive 38.2%<br>ATR Touches</div>
+                </div>
+                <div class="stat-card negative">
+                    <div class="stat-number">45</div>
+                    <div class="stat-label">Negative 38.2%<br>ATR Touches</div>
+                </div>
+                <div class="stat-card positive">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">Positive Golden<br>Gate Events</div>
+                </div>
+                <div class="stat-card negative">
+                    <div class="stat-number">32</div>
+                    <div class="stat-label">Negative Golden<br>Gate Events</div>
+                </div>
+            </div>
+
+            <div class="insights">
+                <h3>Key Discovery: Negative Momentum is 14% Stronger</h3>
+                <p><strong>Asymmetric Market Behavior:</strong> When SPY touches -38.2% ATR levels, there's a 71.1% chance it continues to -61.8% ATR. However, positive momentum only has a 57.1% continuation rate.</p>
+                <p><strong>Market Psychology:</strong> Fear-driven selling creates more persistent momentum than greed-driven buying. This suggests emotional selling cascades more effectively than emotional buying.</p>
+                <p><strong>Trading Implications:</strong> Short-side momentum strategies may have higher success rates. Risk management should account for stronger downward continuation patterns.</p>
+            </div>
+
+            <div class="comparison-section">
+                <div class="pattern-card positive">
+                    <div class="pattern-title">Positive Golden Gate Pattern</div>
+                    <p><strong>Trigger:</strong> Price touches +38.2% ATR level</p>
+                    <p><strong>Target:</strong> Price reaches +61.8% ATR level</p>
+                    <p><strong>Success Rate:</strong> 57.1% (24 out of 42 events)</p>
+                    <p><strong>Average Range:</strong> 109.1% of ATR</p>
+                    <p><strong>Average Max Move:</strong> +75.4% ATR</p>
+                    <p><strong>Interpretation:</strong> Moderate momentum continuation. Buying pressure shows decent follow-through but not overwhelming.</p>
+                </div>
+                
+                <div class="pattern-card negative">
+                    <div class="pattern-title">Negative Golden Gate Pattern</div>
+                    <p><strong>Trigger:</strong> Price touches -38.2% ATR level</p>
+                    <p><strong>Target:</strong> Price reaches -61.8% ATR level</p>
+                    <p><strong>Success Rate:</strong> 71.1% (32 out of 45 events)</p>
+                    <p><strong>Average Range:</strong> 114.2% of ATR</p>
+                    <p><strong>Average Min Move:</strong> -87.3% ATR</p>
+                    <p><strong>Interpretation:</strong> Strong momentum continuation. Selling pressure creates persistent downward moves with high follow-through.</p>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-container">
+                    <div class="chart-title">Golden Gate Success Rates Comparison</div>
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">ATR Touch Events Distribution</div>
+                    <canvas id="distributionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <div class="table-header">Sample Golden Gate Events</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Direction</th>
+                            <th>Prev Close</th>
+                            <th>High/Low</th>
+                            <th>ATR Level</th>
+                            <th>Golden Gate</th>
+                            <th>ATR %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-06-03</td>
+                            <td class="positive-event">Positive</td>
+                            <td>$592.71</td>
+                            <td>$597.08</td>
+                            <td>$595.37</td>
+                            <td class="positive-event">YES</td>
+                            <td>+62.7%</td>
+                        </tr>
+                        <tr>
+                            <td>2025-06-05</td>
+                            <td class="negative-event">Negative</td>
+                            <td>$595.93</td>
+                            <td>$591.05</td>
+                            <td>$593.24</td>
+                            <td class="negative-event">YES</td>
+                            <td>-69.2%</td>
+                        </tr>
+                        <tr>
+                            <td>2025-05-29</td>
+                            <td class="positive-event">Positive</td>
+                            <td>$587.73</td>
+                            <td>$593.20</td>
+                            <td>$590.63</td>
+                            <td class="positive-event">YES</td>
+                            <td>+72.0%</td>
+                        </tr>
+                        <tr>
+                            <td>2025-05-30</td>
+                            <td class="negative-event">Negative</td>
+                            <td>$590.05</td>
+                            <td>$583.24</td>
+                            <td>$587.06</td>
+                            <td class="negative-event">YES</td>
+                            <td>-87.0%</td>
+                        </tr>
+                        <tr>
+                            <td>2025-05-27</td>
+                            <td class="positive-event">Positive</td>
+                            <td>$579.11</td>
+                            <td>$591.31</td>
+                            <td>$582.12</td>
+                            <td class="positive-event">YES</td>
+                            <td>+154.7%</td>
+                        </tr>
+                        <tr>
+                            <td>2025-05-23</td>
+                            <td class="negative-event">Negative</td>
+                            <td>$583.09</td>
+                            <td>$575.60</td>
+                            <td>$580.25</td>
+                            <td class="negative-event">YES</td>
+                            <td>-100.7%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="methodology">
+                <h3>Methodology</h3>
+                <p><strong>ATR Calculation:</strong> 14-period Average True Range to measure typical daily volatility</p>
+                <p><strong>Level Definition:</strong> ±38.2% and ±61.8% Fibonacci ratios applied to ATR from previous close</p>
+                <p><strong>Golden Gate Event:</strong> When price touches initial level (38.2%), does it continue to extended level (61.8%) same day?</p>
+                <p><strong>Analysis Period:</strong> 94 trading days in 2025, providing statistically significant sample size</p>
+                <p><strong>Data Source
