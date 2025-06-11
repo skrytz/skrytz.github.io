@@ -626,11 +626,11 @@
                 
                 <div class="methodology-card">
                     <h3><i class="fas fa-crosshairs"></i> Level Touch Detection</h3>
-                    <p>Precise identification of when price action reaches specific ATR-based levels during trading sessions.</p>
+                    <p>Detection of when price action interacts with specific ATR-based levels during trading sessions, regardless of opening price.</p>
                     <div class="formula">
                         Touch Event = (Daily Low ≤ ATR Level ≤ Daily High)
                     </div>
-                    <p>This binary detection method ensures accurate pattern recognition without subjective interpretation.</p>
+                    <p>This method counts ANY interaction with the level during the day - whether price opens above/below the level and retraces to it, or approaches it from the opposite direction. This inclusive approach captures all momentum patterns including gap scenarios.</p>
                 </div>
                 
                 <div class="methodology-card">
@@ -649,19 +649,20 @@
                     <i class="fas fa-exclamation-triangle"></i> Important Methodology Note
                 </h3>
                 <p style="color: #856404; line-height: 1.7; margin-bottom: 15px;">
-                    <strong>Reverse Pattern Inclusion:</strong> This analysis includes "reverse Golden Gate patterns" as valid completions.
-                    These occur when price opens beyond the 61.8% ATR target level and subsequently touches both the 61.8% and 38.2% levels during the same trading day.
+                    <strong>Inclusive Trigger Detection:</strong> A trigger is counted whenever price interacts with the 38.2% ATR level during the trading day, regardless of where price opens.
+                    This means if price opens above the +38.2% level and retraces to touch it, OR if price opens below and moves up to touch it, both count as triggers.
                 </p>
                 <p style="color: #856404; line-height: 1.7; margin-bottom: 15px;">
-                    <strong>Examples:</strong>
+                    <strong>Gap Scenario Examples:</strong>
                 </p>
                 <ul style="color: #856404; line-height: 1.7; margin-left: 20px;">
-                    <li>Opening above +61.8% ATR and touching both +61.8% and +38.2% levels = Positive Golden Gate completion</li>
-                    <li>Opening below -61.8% ATR and touching both -61.8% and -38.2% levels = Negative Golden Gate completion</li>
+                    <li>Price opens at $105, +38.2% level is $103, day's low is $102 → Trigger counted (level within daily range)</li>
+                    <li>Price opens at $101, +38.2% level is $103, day's high is $104 → Trigger counted (level within daily range)</li>
+                    <li>Price opens at $106, +38.2% level is $103, day's low is $105 → No trigger (level below daily range)</li>
                 </ul>
                 <p style="color: #856404; line-height: 1.7; margin-top: 15px;">
-                    <strong>Rationale:</strong> This inclusive approach provides a more comprehensive view of momentum patterns,
-                    capturing both traditional continuation patterns and gap-driven momentum events.
+                    <strong>Rationale:</strong> This comprehensive approach captures all forms of momentum interaction with ATR levels,
+                    including traditional breakouts, gap reversals, and intraday retracements, providing a complete picture of market behavior.
                 </p>
             </div>
         </div>
