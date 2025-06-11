@@ -1,14 +1,21 @@
 """
-Stock Data Processing Pipeline
+Stock Data Processing Pipeline - IBKR Edition
 Fetches daily candle data for various stock tickers and saves to CSV files
-Supports ES/SPY/SPX, NQ/QQQ/NDX, and MAG7 stocks
+Uses Interactive Brokers API exclusively for institutional-grade data
 """
 
-import yfinance as yf
 import pandas as pd
 import os
 from datetime import datetime, timedelta
 import logging
+
+# IBKR imports
+try:
+    from ib_insync import IB, Stock, util
+    IBKR_AVAILABLE = True
+except ImportError:
+    IBKR_AVAILABLE = False
+    raise ImportError("ib_insync not installed. Install with: pip install ib_insync")
 
 # Configure logging
 logging.basicConfig(
@@ -26,12 +33,12 @@ class StockDataPipeline:
         # S&P 500 related
         'SPY': 'SPDR S&P 500 ETF Trust',
         'SPX': 'S&P 500 Index',
-        'ES=F': 'E-mini S&P 500 Futures',
+        'ES': 'E-mini S&P 500 Futures',
         
         # NASDAQ related  
         'QQQ': 'Invesco QQQ Trust',
         'NDX': 'NASDAQ-100 Index',
-        'NQ=F': 'E-mini NASDAQ-100 Futures',
+        'NQ': 'E-mini NASDAQ-100 Futures',
         
         # MAG7 stocks
         'AAPL': 'Apple Inc.',
@@ -44,21 +51,34 @@ class StockDataPipeline:
         'NVDA': 'NVIDIA Corporation'
     }
     
-    def __init__(self, output_dir="data/ticker_data"):
+    def __init__(self, output_dir="data/ticker_data", ibkr_host='127.0.0.1', ibkr_port=7497):
         """
-        Initialize the stock data pipeline
+        Initialize the IBKR stock data pipeline
         
         Args:
             output_dir (str): Directory to save CSV files
+            ibkr_host (str): IBKR Gateway/TWS host (default: localhost)
+            ibkr_port (int): IBKR Gateway (7497) or TWS (7496) port
         """
         self.output_dir = output_dir
+        self.ibkr_host = ibkr_host
+        self.ibkr_port = ibkr_port
+        self.ib = None
+        self.ibkr_connected = False
+        
         self.ensure_output_directory()
+        logging.info("IBKR Stock Data Pipeline initialized")
         
     def ensure_output_directory(self):
         """Create output directory if it doesn't exist"""
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
             logging.info(f"Created output directory: {self.output_dir}")
+        
+        # Create logs directory
+        logs_dir = "data/logs"
+        if not os.path.exists(logs_dir):
+            os.makedirs(logs_dir)
     
     def get_allowed_tickers(self):
         """
@@ -85,14 +105,44 @@ class StockDataPipeline:
             return False
         return True
     
-    def fetch_historical_data(self, symbol, period="1y", interval="1d"):
+    def connect_ibkr(self):
+        """Connect to IBKR Gateway/TWS"""
+        try:
+            if self.ib is None:
+                self.ib = IB()
+            
+            if not self.ibkr_connected:
+                self.ib.connect(self.ibkr_host, self.ibkr_port, clientId=1)
+                self.ibkr_connected = True
+                logging.info(f"✅ Connected to IBKR at {self.ibkr_host}:{self.ibkr_port}")
+            return True
+        except Exception as e:
+            logging.error(f"❌ Failed to connect to IBKR: {e}")
+            logging.error("SETUP REQUIRED:")
+            logging.error("1. Download and install IB Gateway or TWS")
+            logging.error("2. Start IB Gateway (port 7497) or TWS (port 7496)")
+            logging.error("3. Enable API connections in settings")
+            logging.error("4. Make sure your IBKR account has market data permissions")
+            return False
+    
+    def disconnect_ibkr(self):
+        """Disconnect from IBKR"""
+        if self.ib and self.ibkr_connected:
+            try:
+                self.ib.disconnect()
+                self.ibkr_connected = False
+                logging.info("Disconnected from IBKR")
+            except:
+                pass
+    
+    def fetch_historical_data(self, symbol, duration='2 Y', bar_size='1 day'):
         """
-        Fetch historical stock data from Yahoo Finance
+        Fetch historical data from IBKR
         
         Args:
             symbol (str): Stock ticker symbol
-            period (str): Data period (1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max)
-            interval (str): Data interval (1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo)
+            duration (str): Data duration ('1 Y', '2 Y', '6 M', '1 M', etc.)
+            bar_size (str): Bar size ('1 day', '1 hour', '5 mins', etc.)
         
         Returns:
             pd.DataFrame: Historical stock data
@@ -100,30 +150,58 @@ class StockDataPipeline:
         # Validate ticker
         if not self.validate_ticker(symbol):
             return None
-            
+        
+        # Connect to IBKR
+        if not self.connect_ibkr():
+            return None
+        
         try:
             symbol_upper = symbol.upper()
             ticker_name = self.ALLOWED_TICKERS[symbol_upper]
-            logging.info(f"Fetching {period} of {symbol_upper} ({ticker_name}) data with {interval} interval...")
+            logging.info(f"Fetching {duration} of {symbol_upper} ({ticker_name}) data...")
             
-            # Create ticker object
-            ticker = yf.Ticker(symbol_upper)
+            # Create stock contract
+            stock = Stock(symbol_upper, 'SMART', 'USD')
             
-            # Fetch historical data
-            data = ticker.history(period=period, interval=interval)
-            
-            if data.empty:
-                logging.error(f"No data retrieved from Yahoo Finance for {symbol_upper}")
+            # Qualify the contract
+            qualified_contracts = self.ib.qualifyContracts(stock)
+            if not qualified_contracts:
+                logging.error(f"Could not qualify contract for {symbol_upper}")
                 return None
-                
-            logging.info(f"Successfully fetched {len(data)} records for {symbol_upper}")
-            return data
+            
+            contract = qualified_contracts[0]
+            logging.info(f"Qualified contract: {contract}")
+            
+            # Request historical data
+            bars = self.ib.reqHistoricalData(
+                contract,
+                endDateTime='',
+                durationStr=duration,
+                barSizeSetting=bar_size,
+                whatToShow='TRADES',
+                useRTH=True,  # Regular trading hours only
+                formatDate=1
+            )
+            
+            if not bars:
+                logging.error(f"No data received for {symbol_upper}")
+                return None
+            
+            # Convert to DataFrame
+            df = util.df(bars)
+            
+            if df.empty:
+                logging.error(f"Empty dataframe received for {symbol_upper}")
+                return None
+            
+            logging.info(f"✅ Successfully fetched {len(df)} records from IBKR for {symbol_upper}")
+            return df
             
         except Exception as e:
-            logging.error(f"Error fetching data for {symbol}: {str(e)}")
+            logging.error(f"Error fetching IBKR data for {symbol}: {e}")
             return None
     
-    def fetch_data_by_date_range(self, symbol, start_date, end_date, interval="1d"):
+    def fetch_data_by_date_range(self, symbol, start_date, end_date, bar_size='1 day'):
         """
         Fetch stock data for a specific date range
         
@@ -131,42 +209,33 @@ class StockDataPipeline:
             symbol (str): Stock ticker symbol
             start_date (str): Start date in YYYY-MM-DD format
             end_date (str): End date in YYYY-MM-DD format
-            interval (str): Data interval
+            bar_size (str): Bar size
         
         Returns:
             pd.DataFrame: Historical stock data
         """
-        # Validate ticker
-        if not self.validate_ticker(symbol):
-            return None
-            
-        try:
-            symbol_upper = symbol.upper()
-            ticker_name = self.ALLOWED_TICKERS[symbol_upper]
-            logging.info(f"Fetching {symbol_upper} ({ticker_name}) data from {start_date} to {end_date}...")
-            
-            ticker = yf.Ticker(symbol_upper)
-            data = ticker.history(start=start_date, end=end_date, interval=interval)
-            
-            if data.empty:
-                logging.error(f"No data retrieved for {symbol_upper} in the specified date range")
-                return None
-                
-            logging.info(f"Successfully fetched {len(data)} records for {symbol_upper}")
-            return data
-            
-        except Exception as e:
-            logging.error(f"Error fetching data by date range for {symbol}: {str(e)}")
-            return None
+        # Calculate duration from date range
+        start_dt = datetime.strptime(start_date, '%Y-%m-%d')
+        end_dt = datetime.strptime(end_date, '%Y-%m-%d')
+        duration_days = (end_dt - start_dt).days
+        
+        if duration_days <= 365:
+            duration = f"{duration_days} D"
+        else:
+            duration_years = duration_days / 365.25
+            duration = f"{duration_years:.1f} Y"
+        
+        logging.info(f"Fetching {symbol} data from {start_date} to {end_date} (duration: {duration})")
+        return self.fetch_historical_data(symbol, duration, bar_size)
     
-    def fetch_data_by_year(self, symbol, year, interval="1d"):
+    def fetch_data_by_year(self, symbol, year, bar_size='1 day'):
         """
         Fetch stock data for a specific year
         
         Args:
             symbol (str): Stock ticker symbol
-            year (int or str): Year to fetch data for (e.g., 2024, 2020)
-            interval (str): Data interval
+            year (int or str): Year to fetch data for
+            bar_size (str): Bar size
         
         Returns:
             pd.DataFrame: Historical stock data
@@ -176,22 +245,19 @@ class StockDataPipeline:
             start_date = f"{year}-01-01"
             end_date = f"{year}-12-31"
             
-            logging.info(f"Fetching {symbol.upper()} data for year {year}...")
-            return self.fetch_data_by_date_range(symbol, start_date, end_date, interval)
+            logging.info(f"Fetching {symbol} data for year {year}...")
+            return self.fetch_data_by_date_range(symbol, start_date, end_date, bar_size)
             
         except ValueError:
-            logging.error(f"Invalid year format: {year}. Please provide a valid year (e.g., 2024)")
-            return None
-        except Exception as e:
-            logging.error(f"Error fetching data for year {year}: {str(e)}")
+            logging.error(f"Invalid year format: {year}")
             return None
     
     def process_data(self, data, symbol):
         """
-        Process and clean the raw stock data
+        Process and clean the raw stock data from IBKR
         
         Args:
-            data (pd.DataFrame): Raw stock data
+            data (pd.DataFrame): Raw stock data from IBKR
             symbol (str): Stock ticker symbol
         
         Returns:
@@ -204,15 +270,14 @@ class StockDataPipeline:
             # Reset index to make Date a column
             processed_data = data.reset_index()
             
-            # Rename columns for clarity
+            # Rename columns for consistency
             column_mapping = {
-                'Date': 'date',
-                'Datetime': 'date',  # For some data sources
-                'Open': 'open',
-                'High': 'high',
-                'Low': 'low',
-                'Close': 'close',
-                'Volume': 'volume'
+                'date': 'date',
+                'open': 'open',
+                'high': 'high',
+                'low': 'low',
+                'close': 'close',
+                'volume': 'volume'
             }
             
             # Only rename columns that exist
@@ -251,7 +316,7 @@ class StockDataPipeline:
             logging.error(f"Error processing data for {symbol}: {str(e)}")
             return None
     
-    def save_to_csv(self, data, symbol, filename=None, period="1y"):
+    def save_to_csv(self, data, symbol, filename=None, period="historical"):
         """
         Save processed data to CSV file in organized folder structure
         
@@ -287,98 +352,68 @@ class StockDataPipeline:
                     # Fallback to current timestamp
                     date_range = datetime.now().strftime("%Y%m%d")
                 
-                filename = f"{symbol_upper}_daily_candles_{date_range}_{period}.csv"
+                filename = f"{symbol_upper}_daily_candles_{date_range}_IBKR.csv"
             
             filepath = os.path.join(ticker_dir, filename)
             data.to_csv(filepath, index=False)
             
-            logging.info(f"Data saved to: {filepath}")
+            logging.info(f"✅ IBKR data saved to: {filepath}")
             return filepath
             
         except Exception as e:
             logging.error(f"Error saving data to CSV: {str(e)}")
             return None
     
-    def run_pipeline(self, symbol, period="1y", save_filename=None):
+    def run_pipeline(self, symbol, duration="2 Y", save_filename=None):
         """
-        Run the complete data pipeline for a single ticker
+        Run the complete IBKR data pipeline for a single ticker
         
         Args:
             symbol (str): Stock ticker symbol
-            period (str): Data period to fetch
+            duration (str): Data duration to fetch
             save_filename (str): Custom filename for saved CSV
         
         Returns:
             str: Path to saved CSV file
         """
-        logging.info(f"Starting data pipeline for {symbol.upper()}...")
+        logging.info(f"Starting IBKR data pipeline for {symbol.upper()}...")
         
-        # Fetch data
-        raw_data = self.fetch_historical_data(symbol, period=period)
-        if raw_data is None:
-            logging.error(f"Pipeline failed for {symbol}: Could not fetch data")
+        try:
+            # Fetch data from IBKR
+            raw_data = self.fetch_historical_data(symbol, duration=duration)
+            if raw_data is None:
+                logging.error(f"Pipeline failed for {symbol}: Could not fetch data from IBKR")
+                return None
+            
+            # Process data
+            processed_data = self.process_data(raw_data, symbol)
+            if processed_data is None:
+                logging.error(f"Pipeline failed for {symbol}: Could not process data")
+                return None
+            
+            # Save to CSV
+            filepath = self.save_to_csv(processed_data, symbol, save_filename, duration)
+            if filepath is None:
+                logging.error(f"Pipeline failed for {symbol}: Could not save data")
+                return None
+            
+            logging.info(f"✅ IBKR data pipeline completed successfully for {symbol.upper()}!")
+            return filepath
+            
+        except Exception as e:
+            logging.error(f"Pipeline error for {symbol}: {e}")
             return None
-        
-        # Process data
-        processed_data = self.process_data(raw_data, symbol)
-        if processed_data is None:
-            logging.error(f"Pipeline failed for {symbol}: Could not process data")
-            return None
-        
-        # Save to CSV with period information
-        filepath = self.save_to_csv(processed_data, symbol, save_filename, period)
-        if filepath is None:
-            logging.error(f"Pipeline failed for {symbol}: Could not save data")
-            return None
-        
-        logging.info(f"Data pipeline completed successfully for {symbol.upper()}!")
-        return filepath
+        finally:
+            # Always disconnect when done
+            self.disconnect_ibkr()
     
-    def run_pipeline_by_year(self, symbol, year, save_filename=None):
+    def run_multiple_tickers(self, symbols, duration="2 Y"):
         """
-        Run the complete data pipeline for a single ticker for a specific year
-        
-        Args:
-            symbol (str): Stock ticker symbol
-            year (int or str): Year to fetch data for
-            save_filename (str): Custom filename for saved CSV
-        
-        Returns:
-            str: Path to saved CSV file
-        """
-        logging.info(f"Starting data pipeline for {symbol.upper()} for year {year}...")
-        
-        # Fetch data by year
-        raw_data = self.fetch_data_by_year(symbol, year)
-        if raw_data is None:
-            logging.error(f"Pipeline failed for {symbol}: Could not fetch data for year {year}")
-            return None
-        
-        # Process data
-        processed_data = self.process_data(raw_data, symbol)
-        if processed_data is None:
-            logging.error(f"Pipeline failed for {symbol}: Could not process data")
-            return None
-        
-        # Save to CSV with year information
-        if save_filename is None:
-            save_filename = f"{symbol.upper()}_daily_candles_{year}.csv"
-        
-        filepath = self.save_to_csv(processed_data, symbol, save_filename, str(year))
-        if filepath is None:
-            logging.error(f"Pipeline failed for {symbol}: Could not save data")
-            return None
-        
-        logging.info(f"Data pipeline completed successfully for {symbol.upper()} for year {year}!")
-        return filepath
-    
-    def run_multiple_tickers(self, symbols, period="1y"):
-        """
-        Run the pipeline for multiple tickers
+        Run the IBKR pipeline for multiple tickers
         
         Args:
             symbols (list): List of stock ticker symbols
-            period (str): Data period to fetch
+            duration (str): Data duration to fetch
         
         Returns:
             dict: Dictionary mapping symbols to their saved file paths
@@ -388,8 +423,7 @@ class StockDataPipeline:
         for symbol in symbols:
             logging.info(f"Processing ticker {symbol.upper()}...")
             
-            # Let the pipeline generate the filename automatically with date range
-            result = self.run_pipeline(symbol, period=period, save_filename=None)
+            result = self.run_pipeline(symbol, duration=duration)
             
             if result:
                 results[symbol.upper()] = result
@@ -402,7 +436,7 @@ class StockDataPipeline:
     
     def get_ticker_info(self, symbol):
         """
-        Get basic information about a ticker
+        Get basic information about a ticker from IBKR
         
         Args:
             symbol (str): Stock ticker symbol
@@ -412,19 +446,26 @@ class StockDataPipeline:
         """
         if not self.validate_ticker(symbol):
             return None
+        
+        if not self.connect_ibkr():
+            return None
             
         try:
             symbol_upper = symbol.upper()
-            ticker = yf.Ticker(symbol_upper)
-            info = ticker.info
+            stock = Stock(symbol_upper, 'SMART', 'USD')
+            
+            qualified_contracts = self.ib.qualifyContracts(stock)
+            if not qualified_contracts:
+                return None
+            
+            contract = qualified_contracts[0]
             
             return {
                 'symbol': symbol_upper,
                 'name': self.ALLOWED_TICKERS[symbol_upper],
-                'current_price': info.get('currentPrice', 'N/A'),
-                'market_cap': info.get('marketCap', 'N/A'),
-                'sector': info.get('sector', 'N/A'),
-                'industry': info.get('industry', 'N/A')
+                'exchange': contract.exchange,
+                'currency': contract.currency,
+                'contract_id': contract.conId
             }
             
         except Exception as e:
@@ -432,23 +473,31 @@ class StockDataPipeline:
             return None
 
 def main():
-    """Main function to demonstrate the pipeline"""
+    """Main function to demonstrate the IBKR pipeline"""
     # Initialize pipeline
     pipeline = StockDataPipeline()
     
     # Show allowed tickers
+    print("IBKR Stock Data Pipeline")
+    print("=" * 50)
     print("Allowed Tickers:")
     for symbol, name in pipeline.get_allowed_tickers().items():
         print(f"  {symbol}: {name}")
     
+    print(f"\nSetup Requirements:")
+    print(f"1. Install ib_insync: pip install ib_insync")
+    print(f"2. Download and start IB Gateway or TWS")
+    print(f"3. Enable API connections in IB Gateway/TWS settings")
+    print(f"4. Ensure market data permissions are enabled")
+    
     # Example: Run pipeline for SPY
-    print(f"\nRunning pipeline for SPY...")
-    result = pipeline.run_pipeline("SPY", period="1y", save_filename="SPY_1year.csv")
+    print(f"\nRunning IBKR pipeline for SPY...")
+    result = pipeline.run_pipeline("SPY", duration="1 Y")
     
     if result:
-        print(f"Success! Data saved to: {result}")
+        print(f"✅ Success! IBKR data saved to: {result}")
     else:
-        print("Pipeline failed. Check logs for details.")
+        print("❌ Pipeline failed. Check IBKR connection and logs.")
 
 if __name__ == "__main__":
     main()

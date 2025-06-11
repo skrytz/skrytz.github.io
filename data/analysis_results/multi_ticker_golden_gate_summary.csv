@@ -1,0 +1,3 @@
+ticker,analysis_date,total_trading_days,years_analyzed,date_range,positive_382_touches,positive_golden_gates,positive_probability,negative_382_touches,negative_golden_gates,negative_probability,negative_advantage,methodology
+SPY,2025-06-10 20:47:00,6254,26,2000-2025,2719,1441,53.0,2652,1477,55.7,2.7,Corrected with period_index=1 (previous day ATR)
+QQQ,2025-06-10 20:47:00,6257,26,2000-2025,3066,1564,51.0,2856,1576,55.2,4.2,Corrected with period_index=1 (previous day ATR)

@@ -1,9 +1,12 @@
 """
-Separated Golden Gate Analysis
+Separated Golden Gate Analysis - CORRECTED with Saty's exact methodology
 
 Analyzes positive and negative Golden Gate patterns separately:
 - Positive: +38.2% ATR touch → +61.8% ATR touch (same direction only)
 - Negative: -38.2% ATR touch → -61.8% ATR touch (same direction only)
+
+IMPORTANT CORRECTION: Now uses previous day's ATR for calculating today's levels
+(period_index=1 in Pine Script), matching Saty's exact methodology.
 
 No cross-directional analysis - positive stays positive, negative stays negative.
 """
@@ -17,23 +20,44 @@ import numpy as np
 import argparse
 from datetime import datetime
 
-def calculate_atr(data, period=14):
-    """Calculate ATR (Average True Range)"""
-    high = data['high']
-    low = data['low']
-    close = data['close']
+def calculate_atr_pine_script(high, low, close, period=14):
+    """
+    EXACT Pine Script ATR calculation using RMA methodology
+    This matches ta.atr() function exactly
+    """
+    prev_close = close.shift(1)
     
-    # Calculate True Range
+    # True Range components
     tr1 = high - low
-    tr2 = abs(high - close.shift(1))
-    tr3 = abs(low - close.shift(1))
+    tr2 = abs(high - prev_close)
+    tr3 = abs(low - prev_close)
     
+    # True Range is the maximum of the three
     true_range = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
     
-    # Calculate ATR
-    atr = true_range.rolling(window=period).mean()
+    # Pine Script RMA calculation - EXACT implementation
+    atr_values = []
     
-    return atr
+    for i in range(len(true_range)):
+        if pd.isna(true_range.iloc[i]):
+            atr_values.append(np.nan)
+        elif i == 0:
+            atr_values.append(true_range.iloc[i])
+        elif i < period:
+            atr_values.append(true_range.iloc[:i+1].mean())
+        else:
+            prev_rma = atr_values[i-1]
+            current_tr = true_range.iloc[i]
+            rma_value = (prev_rma * (period - 1) + current_tr) / period
+            atr_values.append(rma_value)
+    
+    return pd.Series(atr_values, index=true_range.index)
+
+def calculate_atr(data, period=14):
+    """
+    Wrapper function for backward compatibility
+    """
+    return calculate_atr_pine_script(data['high'], data['low'], data['close'], period)
 
 def calculate_atr_levels(previous_close, atr):
     """Calculate ATR-based levels"""
@@ -58,6 +82,7 @@ def analyze_separated_golden_gate(data_file, ticker_symbol=None):
     
     Positive Golden Gate: +38.2% ATR touch → +61.8% ATR touch (same direction)
     Negative Golden Gate: -38.2% ATR touch → -61.8% ATR touch (same direction)
+    Reverse Golden Gate: Opens beyond target level, then touches initial level
     
     Args:
         data_file (str): Path to CSV file with stock data
@@ -105,8 +130,10 @@ def analyze_separated_golden_gate(data_file, ticker_symbol=None):
         current_day = data.iloc[i]
         previous_day = data.iloc[i-1]
         
-        # Calculate ATR levels based on previous close
-        levels = calculate_atr_levels(previous_day['close'], current_day['atr'])
+        # CORRECTED: Use previous day's ATR (period_index=1 in Pine Script)
+        # This matches Saty's exact methodology
+        previous_atr = previous_day['atr'] if i > 0 else current_day['atr']
+        levels = calculate_atr_levels(previous_day['close'], previous_atr)
         
         # POSITIVE Golden Gate Analysis (completely separate)
         touched_positive_382 = check_level_touch(current_day['high'], current_day['low'], levels['upper_382'])
@@ -114,6 +141,13 @@ def analyze_separated_golden_gate(data_file, ticker_symbol=None):
         if touched_positive_382:
             # Check if +61.8% ATR was also touched (same positive direction)
             touched_positive_618 = check_level_touch(current_day['high'], current_day['low'], levels['upper_618'])
+            
+            # Exclude "reverse golden gate" - if opened above 61.8% and came down to 38.2%
+            # This shouldn't count as a valid Golden Gate pattern
+            opened_above_618 = current_day['open'] > levels['upper_618']
+            if opened_above_618 and touched_positive_618:
+                # This is a reverse pattern - exclude from Golden Gate count
+                touched_positive_618 = False
             
             positive_event = {
                 'date': current_day['date'],
@@ -143,6 +177,13 @@ def analyze_separated_golden_gate(data_file, ticker_symbol=None):
         if touched_negative_382:
             # Check if -61.8% ATR was also touched (same negative direction)
             touched_negative_618 = check_level_touch(current_day['high'], current_day['low'], levels['lower_618'])
+            
+            # Exclude "reverse golden gate" - if opened below -61.8% and came up to -38.2%
+            # This shouldn't count as a valid Golden Gate pattern
+            opened_below_618 = current_day['open'] < levels['lower_618']
+            if opened_below_618 and touched_negative_618:
+                # This is a reverse pattern - exclude from Golden Gate count
+                touched_negative_618 = False
             
             negative_event = {
                 'date': current_day['date'],
