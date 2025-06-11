@@ -32,6 +32,27 @@
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             border-left: 6px solid #3498db;
+            position: relative;
+        }
+
+        .nav-link {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .nav-link:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
         }
         
         .header h1 {
@@ -461,12 +482,21 @@
             .finding-number {
                 font-size: 3.5rem;
             }
+
+            .nav-link {
+                position: static;
+                display: inline-block;
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <a href="data.html" class="nav-link">
+                <i class="fas fa-table" style="margin-right: 8px;"></i>View Detailed Data
+            </a>
             <h1>Golden Gate Analysis</h1>
             <div class="subtitle">A Comprehensive 25-Year Multi-Ticker Study of SPY & QQQ Momentum Patterns</div>
             <div class="period">2000 - 2025 • 6,250+ Trading Days • Using Saty's Golden Gate Methodology</div>
