@@ -1,3 +1,0 @@
-ticker,analysis_date,methodology,total_trading_days,years_analyzed,date_range,positive_382_touches,positive_golden_gates,positive_probability,negative_382_touches,negative_golden_gates,negative_probability,negative_advantage,excluded_positive_gaps,excluded_negative_gaps,total_excluded
-SPY,2025-06-10 22:24:24,True Trigger (excludes gap scenarios),6254,26,2000-2025,2090,1088,52.1,2131,1210,56.8,4.7,629,521,1150
-QQQ,2025-06-10 22:24:24,True Trigger (excludes gap scenarios),6257,26,2000-2025,2415,1210,50.1,2354,1317,55.9,5.8,651,502,1153
