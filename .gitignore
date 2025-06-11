@@ -93,3 +93,7 @@ Pipfile.lock
 
 # Requirements backup
 requirements-backup.txt
+
+# Alternative design versions
+index2.html
+index3.html
