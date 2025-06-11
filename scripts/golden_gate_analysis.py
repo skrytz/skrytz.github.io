@@ -142,12 +142,11 @@ def analyze_separated_golden_gate(data_file, ticker_symbol=None):
             # Check if +61.8% ATR was also touched (same positive direction)
             touched_positive_618 = check_level_touch(current_day['high'], current_day['low'], levels['upper_618'])
             
-            # Exclude "reverse golden gate" - if opened above 61.8% and came down to 38.2%
-            # This shouldn't count as a valid Golden Gate pattern
+            # UPDATED: Include "reverse golden gate" patterns as valid completions
+            # If opened above 61.8% and touched both levels, count as completed
+            # This provides a more inclusive view of momentum patterns
             opened_above_618 = current_day['open'] > levels['upper_618']
-            if opened_above_618 and touched_positive_618:
-                # This is a reverse pattern - exclude from Golden Gate count
-                touched_positive_618 = False
+            # Note: We now count reverse patterns as valid Golden Gate completions
             
             positive_event = {
                 'date': current_day['date'],
@@ -178,12 +177,11 @@ def analyze_separated_golden_gate(data_file, ticker_symbol=None):
             # Check if -61.8% ATR was also touched (same negative direction)
             touched_negative_618 = check_level_touch(current_day['high'], current_day['low'], levels['lower_618'])
             
-            # Exclude "reverse golden gate" - if opened below -61.8% and came up to -38.2%
-            # This shouldn't count as a valid Golden Gate pattern
+            # UPDATED: Include "reverse golden gate" patterns as valid completions
+            # If opened below -61.8% and touched both levels, count as completed
+            # This provides a more inclusive view of momentum patterns
             opened_below_618 = current_day['open'] < levels['lower_618']
-            if opened_below_618 and touched_negative_618:
-                # This is a reverse pattern - exclude from Golden Gate count
-                touched_negative_618 = False
+            # Note: We now count reverse patterns as valid Golden Gate completions
             
             negative_event = {
                 'date': current_day['date'],

@@ -151,10 +151,10 @@ def analyze_year_subset(year_data, year, ticker):
             positive_382_touches += 1
             touched_positive_618 = check_level_touch(current_day['high'], current_day['low'], levels['upper_618'])
             
-            # Exclude reverse patterns
+            # UPDATED: Include reverse patterns as valid completions
+            # If opened above 61.8% and touched both levels, count as completed
             opened_above_618 = current_day['open'] > levels['upper_618']
-            if opened_above_618 and touched_positive_618:
-                touched_positive_618 = False
+            # Note: We now count reverse patterns as valid Golden Gate completions
                 
             if touched_positive_618:
                 positive_golden_gates += 1
@@ -165,10 +165,10 @@ def analyze_year_subset(year_data, year, ticker):
             negative_382_touches += 1
             touched_negative_618 = check_level_touch(current_day['high'], current_day['low'], levels['lower_618'])
             
-            # Exclude reverse patterns
+            # UPDATED: Include reverse patterns as valid completions
+            # If opened below -61.8% and touched both levels, count as completed
             opened_below_618 = current_day['open'] < levels['lower_618']
-            if opened_below_618 and touched_negative_618:
-                touched_negative_618 = False
+            # Note: We now count reverse patterns as valid Golden Gate completions
                 
             if touched_negative_618:
                 negative_golden_gates += 1
