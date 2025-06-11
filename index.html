@@ -3,251 +3,613 @@
 <head>
     <title>Golden Gate Analysis - SPY</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0;
             padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            animation: backgroundShift 10s ease-in-out infinite alternate;
         }
+        
+        @keyframes backgroundShift {
+            0% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+            100% { background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); }
+        }
+        
         .container {
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 0;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
             overflow: hidden;
+            animation: slideUp 0.8s ease-out;
         }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         .header {
             background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
-            padding: 40px;
+            padding: 50px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
         .header h1 {
-            margin: 0 0 10px 0;
-            font-size: 2.5em;
+            margin: 0 0 15px 0;
+            font-size: 3em;
             font-weight: 300;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: glow 2s ease-in-out infinite alternate;
         }
+        
+        @keyframes glow {
+            from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 10px rgba(255,255,255,0.2); }
+            to { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.4); }
+        }
+        
         .header p {
-            margin: 5px 0;
-            opacity: 0.9;
-            font-size: 1.1em;
+            margin: 8px 0;
+            opacity: 0.95;
+            font-size: 1.2em;
+            animation: fadeInUp 1s ease-out 0.3s both;
         }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 0.95; transform: translateY(0); }
+        }
+        
+        .pulse-icon {
+            display: inline-block;
+            margin: 0 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
         .content {
-            padding: 40px;
+            padding: 50px;
         }
+        
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        .stat-card {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        .stat-card.positive {
-            border-left: 4px solid #27ae60;
-        }
-        .stat-card.negative {
-            border-left: 4px solid #e74c3c;
-        }
-        .stat-number {
-            font-size: 2.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .positive .stat-number {
-            color: #27ae60;
-        }
-        .negative .stat-number {
-            color: #e74c3c;
-        }
-        .stat-label {
-            color: #666;
-            font-size: 0.95em;
-            line-height: 1.4;
-        }
-        .chart-section {
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
             margin: 40px 0;
         }
+        
+        .secondary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card.hero {
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            transform: scale(1.05);
+        }
+        
+        .stat-card.secondary {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            opacity: 0.85;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card.positive {
+            border-left: 5px solid #27ae60;
+            background: linear-gradient(145deg, #d5f4e6, #c8e6c9);
+        }
+        
+        .stat-card.negative {
+            border-left: 5px solid #e74c3c;
+            background: linear-gradient(145deg, #ffeaa7, #fab1a0);
+        }
+        
+        .stat-number {
+            font-size: 2.8em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stat-card.hero .stat-number {
+            font-size: 4.5em;
+            margin-bottom: 20px;
+            animation: numberPulse 3s ease-in-out infinite;
+        }
+        
+        .stat-card.secondary .stat-number {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes numberPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .positive .stat-number {
+            color: #27ae60;
+            text-shadow: 2px 2px 4px rgba(39, 174, 96, 0.3);
+        }
+        
+        .negative .stat-number {
+            color: #e74c3c;
+            text-shadow: 2px 2px 4px rgba(231, 76, 60, 0.3);
+        }
+        
+        .stat-label {
+            color: #2c3e50;
+            font-size: 1em;
+            line-height: 1.5;
+            font-weight: 500;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stat-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            opacity: 0.7;
+        }
+        
+        .chart-section {
+            margin: 50px 0;
+        }
+        
         .chart-container {
             position: relative;
-            height: 300px;
-            margin: 20px 0;
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            height: 350px;
+            margin: 30px 0;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
+        
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
         .chart-title {
-            font-size: 1.3em;
+            font-size: 1.4em;
             font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-align: center;
+            position: relative;
         }
+        
+        .chart-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+        
         .insights {
             background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
             color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin: 30px 0;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(116, 185, 255, 0.3);
         }
+        
+        .insights::before {
+            content: '💡';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 3em;
+            opacity: 0.2;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
         .insights h3 {
-            margin: 0 0 15px 0;
-            font-size: 1.4em;
+            margin: 0 0 20px 0;
+            font-size: 1.6em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
+        
         .insights p {
-            margin: 10px 0;
-            line-height: 1.6;
+            margin: 15px 0;
+            line-height: 1.7;
+            font-size: 1.05em;
         }
+        
         .comparison-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin: 30px 0;
+            gap: 40px;
+            margin: 40px 0;
         }
+        
         .pattern-card {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .pattern-card.positive {
-            border-top: 4px solid #27ae60;
+        
+        .pattern-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, currentColor, transparent);
+            opacity: 0.3;
         }
-        .pattern-card.negative {
-            border-top: 4px solid #e74c3c;
+        
+        .pattern-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
+        
+        .pattern-card.positive::before {
+            background: linear-gradient(90deg, transparent, #27ae60, transparent);
+        }
+        
+        .pattern-card.negative::before {
+            background: linear-gradient(90deg, transparent, #e74c3c, transparent);
+        }
+        
         .pattern-title {
-            font-size: 1.3em;
+            font-size: 1.4em;
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+        
         .positive .pattern-title {
             color: #27ae60;
         }
+        
         .negative .pattern-title {
             color: #e74c3c;
         }
+        
+        .pattern-card p {
+            margin: 12px 0;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+        
         .data-table {
-            background: white;
-            border-radius: 10px;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 40px 0;
+            transition: all 0.3s ease;
         }
+        
+        .data-table:hover {
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
         .table-header {
-            background: #34495e;
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
             color: white;
-            padding: 20px;
-            font-size: 1.2em;
+            padding: 25px;
+            font-size: 1.3em;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+        
         table {
             width: 100%;
             border-collapse: collapse;
         }
+        
         th, td {
-            padding: 12px;
+            padding: 15px;
             text-align: left;
             border-bottom: 1px solid #eee;
-            font-size: 0.9em;
+            font-size: 0.95em;
+            transition: background-color 0.2s ease;
         }
+        
         th {
-            background: #f8f9fa;
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
             font-weight: 600;
             color: #2c3e50;
+            position: sticky;
+            top: 0;
         }
+        
         tr:hover {
-            background: #f8f9fa;
+            background: linear-gradient(145deg, #f8f9fa, #e3f2fd);
         }
+        
         .positive-event {
             color: #27ae60;
             font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(39, 174, 96, 0.2);
         }
+        
         .negative-event {
             color: #e74c3c;
             font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(231, 76, 60, 0.2);
         }
+        
         .methodology {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 10px;
-            margin: 30px 0;
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            padding: 40px;
+            border-radius: 15px;
+            margin: 40px 0;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
+        
         .methodology h3 {
             color: #2c3e50;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+        
+        .methodology p {
+            margin: 15px 0;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+        
         .code-example {
-            background: #2c3e50;
+            background: linear-gradient(145deg, #2c3e50, #34495e);
             color: #ecf0f1;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 15px;
             font-family: 'Courier New', monospace;
-            margin: 20px 0;
+            margin: 25px 0;
             overflow-x: auto;
+            box-shadow: 0 10px 30px rgba(44, 62, 80, 0.3);
+            position: relative;
         }
+        
+        .code-example::before {
+            content: '⚡';
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5em;
+            opacity: 0.5;
+        }
+        
         .footer {
-            background: #2c3e50;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
-            padding: 30px;
+            padding: 40px;
             text-align: center;
             font-size: 0.9em;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .footer p {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(100px);
+        }
+        
+        .scroll-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .scroll-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .content {
+                padding: 30px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Golden Gate Analysis</h1>
-            <p>SPY Momentum Continuation Probability Study</p>
-            <p>ATR-Based Level Touch Analysis</p>
-            <p>Data Period: January 23, 2025 - June 9, 2025 | 94 Trading Days</p>
+            <div class="header-content">
+                <h1><i class="fas fa-chart-line pulse-icon"></i>Golden Gate Analysis</h1>
+                <p>SPY Momentum Continuation Probability Study</p>
+                <p><i class="fas fa-bullseye pulse-icon"></i>ATR-Based Level Touch Analysis</p>
+                <p>Data Period: January 23, 2025 - June 9, 2025 | 94 Trading Days</p>
+            </div>
         </div>
 
         <div class="content">
             <div class="stats-grid">
-                <div class="stat-card positive">
+                <div class="stat-card hero positive">
+                    <div class="stat-icon"><i class="fas fa-arrow-trend-up"></i></div>
                     <div class="stat-number">57.1%</div>
-                    <div class="stat-label">Positive Golden Gate<br>+38.2% → +61.8% ATR</div>
+                    <div class="stat-label"><strong>Positive Golden Gate</strong><br>+38.2% → +61.8% ATR Success Rate</div>
                 </div>
-                <div class="stat-card negative">
+                <div class="stat-card hero negative">
+                    <div class="stat-icon"><i class="fas fa-arrow-trend-down"></i></div>
                     <div class="stat-number">71.1%</div>
-                    <div class="stat-label">Negative Golden Gate<br>-38.2% → -61.8% ATR</div>
+                    <div class="stat-label"><strong>Negative Golden Gate</strong><br>-38.2% → -61.8% ATR Success Rate</div>
                 </div>
-                <div class="stat-card positive">
+            </div>
+            
+            <div class="secondary-stats">
+                <div class="stat-card secondary positive">
+                    <div class="stat-icon"><i class="fas fa-crosshairs"></i></div>
                     <div class="stat-number">42</div>
                     <div class="stat-label">Positive 38.2%<br>ATR Touches</div>
                 </div>
-                <div class="stat-card negative">
+                <div class="stat-card secondary negative">
+                    <div class="stat-icon"><i class="fas fa-crosshairs"></i></div>
                     <div class="stat-number">45</div>
                     <div class="stat-label">Negative 38.2%<br>ATR Touches</div>
                 </div>
-                <div class="stat-card positive">
+                <div class="stat-card secondary positive">
+                    <div class="stat-icon"><i class="fas fa-trophy"></i></div>
                     <div class="stat-number">24</div>
                     <div class="stat-label">Positive Golden<br>Gate Events</div>
                 </div>
-                <div class="stat-card negative">
+                <div class="stat-card secondary negative">
+                    <div class="stat-icon"><i class="fas fa-trophy"></i></div>
                     <div class="stat-number">32</div>
                     <div class="stat-label">Negative Golden<br>Gate Events</div>
                 </div>
             </div>
 
             <div class="insights">
-                <h3>Key Discovery: Negative Momentum is 14% Stronger</h3>
+                <h3><i class="fas fa-lightbulb"></i> Key Discovery: Negative Momentum is 14% Stronger</h3>
                 <p><strong>Asymmetric Market Behavior:</strong> When SPY touches -38.2% ATR levels, there's a 71.1% chance it continues to -61.8% ATR. However, positive momentum only has a 57.1% continuation rate.</p>
                 <p><strong>Market Psychology:</strong> Fear-driven selling creates more persistent momentum than greed-driven buying. This suggests emotional selling cascades more effectively than emotional buying.</p>
                 <p><strong>Trading Implications:</strong> Short-side momentum strategies may have higher success rates. Risk management should account for stronger downward continuation patterns.</p>
@@ -255,7 +617,7 @@
 
             <div class="comparison-section">
                 <div class="pattern-card positive">
-                    <div class="pattern-title">Positive Golden Gate Pattern</div>
+                    <div class="pattern-title"><i class="fas fa-arrow-up"></i> Positive Golden Gate Pattern</div>
                     <p><strong>Trigger:</strong> Price touches +38.2% ATR level</p>
                     <p><strong>Target:</strong> Price reaches +61.8% ATR level</p>
                     <p><strong>Success Rate:</strong> 57.1% (24 out of 42 events)</p>
@@ -265,7 +627,7 @@
                 </div>
                 
                 <div class="pattern-card negative">
-                    <div class="pattern-title">Negative Golden Gate Pattern</div>
+                    <div class="pattern-title"><i class="fas fa-arrow-down"></i> Negative Golden Gate Pattern</div>
                     <p><strong>Trigger:</strong> Price touches -38.2% ATR level</p>
                     <p><strong>Target:</strong> Price reaches -61.8% ATR level</p>
                     <p><strong>Success Rate:</strong> 71.1% (32 out of 45 events)</p>
@@ -277,18 +639,25 @@
 
             <div class="chart-section">
                 <div class="chart-container">
-                    <div class="chart-title">Golden Gate Success Rates Comparison</div>
+                    <div class="chart-title"><i class="fas fa-chart-bar"></i> Golden Gate Success Rates Comparison</div>
                     <canvas id="comparisonChart"></canvas>
                 </div>
                 
-                <div class="chart-container">
-                    <div class="chart-title">ATR Touch Events Distribution</div>
-                    <canvas id="distributionChart"></canvas>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 30px 0;">
+                    <div class="chart-container">
+                        <div class="chart-title"><i class="fas fa-chart-pie"></i> Positive Pattern Breakdown</div>
+                        <canvas id="positiveChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-title"><i class="fas fa-chart-pie"></i> Negative Pattern Breakdown</div>
+                        <canvas id="negativeChart"></canvas>
+                    </div>
                 </div>
             </div>
 
             <div class="data-table">
-                <div class="table-header">Sample Golden Gate Events</div>
+                <div class="table-header"><i class="fas fa-table"></i> Sample Golden Gate Events</div>
                 <table>
                     <thead>
                         <tr>
@@ -361,7 +730,7 @@
             </div>
 
             <div class="methodology">
-                <h3>Methodology</h3>
+                <h3><i class="fas fa-cogs"></i> Methodology</h3>
                 <p><strong>ATR Calculation:</strong> 14-period Average True Range to measure typical daily volatility</p>
                 <p><strong>Level Definition:</strong> ±38.2% and ±61.8% Fibonacci ratios applied to ATR from previous close</p>
                 <p><strong>Golden Gate Event:</strong> When price touches initial level (38.2%), does it continue to extended level (61.8%) same day?</p>
@@ -370,8 +739,7 @@
             </div>
 
             <div class="code-example">
-                <div>Run
-the Golden Gate Analysis:</div>
+                <div>Run the Golden Gate Analysis:</div>
                 <div style="margin-top: 10px;">python scripts/golden_gate_analysis.py SPY</div>
                 <div style="margin-top: 5px; opacity: 0.7;"># Analyzes both positive and negative patterns</div>
             </div>
@@ -389,14 +757,18 @@ the Golden Gate Analysis:</div>
                 The original ATR levels concept and Fibonacci-based volatility analysis framework comes from Saty's innovative work.
             </p>
             <p style="font-size: 0.8em; opacity: 0.8; margin-top: 15px; line-height: 1.4; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px;">
-                <strong>IMPORTANT DISCLAIMER:</strong> This analysis is for educational and research purposes only.
-                <strong>I am not a financial advisor.</strong> This is not financial advice or investment recommendations.
-                Trading and investing involve substantial risk of loss. Past performance does not guarantee future results.
-                Always consult with qualified financial advisors before making investment decisions.
+                <strong>IMPORTANT DISCLAIMER:</strong> This analysis is for educational and research purposes only. 
+                <strong>I am not a financial advisor.</strong> This is not financial advice or investment recommendations. 
+                Trading and investing involve substantial risk of loss. Past performance does not guarantee future results. 
+                Always consult with qualified financial advisors before making investment decisions. 
                 The author is not responsible for any trading losses or investment decisions based on this analysis.
             </p>
         </div>
     </div>
+
+    <button class="scroll-to-top" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
     <script>
         // Chart data
@@ -406,10 +778,15 @@ the Golden Gate Analysis:</div>
                 data: [57.1, 71.1],
                 colors: ['#27ae60', '#e74c3c']
             },
-            distribution: {
-                labels: ['Positive 38.2% Touches', 'Negative 38.2% Touches', 'Positive Golden Gates', 'Negative Golden Gates'],
-                data: [42, 45, 24, 32],
-                colors: ['#27ae60', '#e74c3c', '#2ecc71', '#c0392b']
+            positive: {
+                labels: ['Golden Gate Success', 'Failed to Continue'],
+                data: [24, 18],
+                colors: ['#27ae60', '#95a5a6']
+            },
+            negative: {
+                labels: ['Golden Gate Success', 'Failed to Continue'],
+                data: [32, 13],
+                colors: ['#e74c3c', '#95a5a6']
             }
         };
 
@@ -425,11 +802,11 @@ the Golden Gate Analysis:</div>
                         data: chartData.comparison.data,
                         backgroundColor: chartData.comparison.colors,
                         borderWidth: 0,
-                        borderRadius: 5
+                        borderRadius: 8
                     }]
                 },
                 options: {
-                    responsive: true,
+responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
@@ -450,16 +827,16 @@ the Golden Gate Analysis:</div>
             });
         }
 
-        // Create distribution chart
-        function createDistributionChart() {
-            const ctx = document.getElementById('distributionChart').getContext('2d');
+        // Create positive pattern chart
+        function createPositiveChart() {
+            const ctx = document.getElementById('positiveChart').getContext('2d');
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: chartData.distribution.labels,
+                    labels: chartData.positive.labels,
                     datasets: [{
-                        data: chartData.distribution.data,
-                        backgroundColor: chartData.distribution.colors,
+                        data: chartData.positive.data,
+                        backgroundColor: chartData.positive.colors,
                         borderWidth: 0
                     }]
                 },
@@ -469,16 +846,68 @@ the Golden Gate Analysis:</div>
                     plugins: {
                         legend: {
                             position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: '42 Total Touches → 24 Success (57.1%)'
                         }
                     }
                 }
             });
         }
 
+        // Create negative pattern chart
+        function createNegativeChart() {
+            const ctx = document.getElementById('negativeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: chartData.negative.labels,
+                    datasets: [{
+                        data: chartData.negative.data,
+                        backgroundColor: chartData.negative.colors,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: '45 Total Touches → 32 Success (71.1%)'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Scroll to top functionality
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Show/hide scroll to top button
+        window.addEventListener('scroll', function() {
+            const scrollButton = document.querySelector('.scroll-to-top');
+            if (window.pageYOffset > 300) {
+                scrollButton.classList.add('visible');
+            } else {
+                scrollButton.classList.remove('visible');
+            }
+        });
+
         // Initialize charts when page loads
         window.addEventListener('load', function() {
             createComparisonChart();
-            createDistributionChart();
+            createPositiveChart();
+            createNegativeChart();
         });
     </script>
 </body>

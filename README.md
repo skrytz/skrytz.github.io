@@ -3,7 +3,7 @@
 An interactive dashboard analyzing momentum continuation patterns in SPY using ATR-based levels inspired by Saty's ATR methodology.
 
 ## 🔗 Live Dashboard
-[**View Interactive Dashboard**](https://YOUR_USERNAME.github.io/YOUR_REPO_NAME/)
+[**View Interactive Dashboard**](https://skrytz.github.io/skrytz.github.io/)
 
 ## 📊 Key Findings
 
