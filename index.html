@@ -35,10 +35,15 @@
             position: relative;
         }
 
-        .nav-link {
+        .nav-links {
             position: absolute;
             top: 20px;
             right: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
             background: #3498db;
             color: white;
             padding: 12px 20px;
@@ -494,9 +499,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <a href="data.html" class="nav-link">
-                <i class="fas fa-table" style="margin-right: 8px;"></i>View Detailed Data
-            </a>
+            <div class="nav-links">
+                <a href="intraday.html" class="nav-link">
+                    <i class="fas fa-clock"></i> Intraday Analysis
+                </a>
+                <a href="data.html" class="nav-link">
+                    <i class="fas fa-table"></i> Detailed Data
+                </a>
+            </div>
             <h1>Golden Gate Analysis</h1>
             <div class="subtitle">A Comprehensive 25-Year Multi-Ticker Study with Gap-Open Methodology</div>
             <div class="period">2000 - 2025 • 6,340+ Trading Days • Proper ATR Warm-up • Gap-Open vs Intraday Analysis</div>
