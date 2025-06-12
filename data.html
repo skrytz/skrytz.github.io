@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Golden Gate Analysis - Detailed Data</title>
+    <title>Enhanced Golden Gate Analysis - Detailed Data</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -18,7 +18,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 60px 20px;
         }
@@ -75,6 +75,52 @@
             font-weight: 500;
         }
 
+        .summary-section {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            margin: 60px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 6px solid #e67e22;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .summary-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border-left: 4px solid #3498db;
+        }
+
+        .summary-card.qqq {
+            border-left-color: #e67e22;
+        }
+
+        .summary-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
         .table-section {
             background: white;
             border-radius: 20px;
@@ -104,7 +150,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             border-radius: 8px;
             overflow: hidden;
@@ -117,9 +163,10 @@
         }
 
         th {
-            padding: 15px 12px;
+            padding: 12px 8px;
             text-align: center;
             font-weight: 600;
+            font-size: 0.8rem;
         }
 
         th:first-child {
@@ -136,8 +183,9 @@
         }
 
         td {
-            padding: 12px;
+            padding: 10px 8px;
             text-align: center;
+            font-size: 0.8rem;
         }
 
         td:first-child {
@@ -158,6 +206,11 @@
 
         .neutral {
             color: #5a6c7d;
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            font-weight: 600;
         }
 
         .footer {
@@ -192,6 +245,14 @@
                 display: inline-block;
                 margin-bottom: 20px;
             }
+            
+            table {
+                font-size: 0.7rem;
+            }
+            
+            th, td {
+                padding: 8px 4px;
+            }
         }
     </style>
 </head>
@@ -201,116 +262,189 @@
             <a href="index.html" class="nav-link">
                 <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>Back to Analysis
             </a>
-            <h1>Historical Golden Gate Data</h1>
-            <div class="subtitle">Complete yearly breakdown of Golden Gate patterns for SPY and QQQ</div>
-            <div class="period">2000 - 2025 • 6,250+ Trading Days • Detailed CSV Data</div>
+            <h1>Enhanced Golden Gate Analysis</h1>
+            <div class="subtitle">Gap-Open vs Intraday Methodology • Corrected ATR Calculations • 25-Year Analysis</div>
+            <div class="period">2000 - 2025 • 6,340+ Trading Days • Enhanced IBKR Dataset with Proper ATR Warm-up</div>
+        </div>
+
+        <div class="summary-section">
+            <h2><i class="fas fa-chart-bar" style="margin-right: 15px; color: #e67e22;"></i>Corrected Analysis Summary</h2>
+            <p style="text-align: center; color: #7f8c8d; margin-bottom: 30px; font-style: italic;">
+                Enhanced methodology with proper 14-period ATR warm-up • Distinguishes gap-open scenarios from intraday triggers
+            </p>
+            
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h3><i class="fas fa-chart-line" style="color: #3498db; margin-right: 10px;"></i>SPY Results</h3>
+                    <div class="metric">
+                        <span>Total Trading Days:</span>
+                        <span class="highlight">6,344</span>
+                    </div>
+                    <div class="metric">
+                        <span>Gap-Open Positive Rate:</span>
+                        <span class="positive">81.8%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Gap-Open Negative Rate:</span>
+                        <span class="negative">85.8%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Intraday Positive Rate:</span>
+                        <span class="positive">55.6%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Intraday Negative Rate:</span>
+                        <span class="negative">58.9%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Combined Positive Rate:</span>
+                        <span class="positive">58.2%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Combined Negative Rate:</span>
+                        <span class="negative">61.7%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Negative Advantage:</span>
+                        <span class="highlight negative">+3.5%</span>
+                    </div>
+                </div>
+
+                <div class="summary-card qqq">
+                    <h3><i class="fas fa-chart-line" style="color: #e67e22; margin-right: 10px;"></i>QQQ Results</h3>
+                    <div class="metric">
+                        <span>Total Trading Days:</span>
+                        <span class="highlight">6,346</span>
+                    </div>
+                    <div class="metric">
+                        <span>Gap-Open Positive Rate:</span>
+                        <span class="positive">79.7%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Gap-Open Negative Rate:</span>
+                        <span class="negative">81.6%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Intraday Positive Rate:</span>
+                        <span class="positive">54.2%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Intraday Negative Rate:</span>
+                        <span class="negative">57.9%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Combined Positive Rate:</span>
+                        <span class="positive">56.6%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Combined Negative Rate:</span>
+                        <span class="negative">60.2%</span>
+                    </div>
+                    <div class="metric">
+                        <span>Negative Advantage:</span>
+                        <span class="highlight negative">+3.6%</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="table-section">
-            <h2><i class="fas fa-table" style="margin-right: 15px; color: #3498db;"></i>Complete Dataset</h2>
+            <h2><i class="fas fa-table" style="margin-right: 15px; color: #3498db;"></i>Enhanced Gap-Open Methodology Comparison</h2>
             <p style="text-align: center; color: #7f8c8d; margin-bottom: 40px; font-style: italic;">
-                All yearly data points from the CSV analysis files with comprehensive metrics
+                Complete breakdown showing gap-open scenarios vs intraday triggers with proper ATR calculations
             </p>
 
-            <h3 style="color: #3498db;"><i class="fas fa-chart-line" style="margin-right: 10px;"></i>SPY (S&P 500 ETF) - Complete Dataset</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>Year</th>
+                        <th>Ticker</th>
                         <th>Trading Days</th>
-                        <th>Pos Triggers</th>
-                        <th>Pos Gates</th>
-                        <th>Pos Success %</th>
-                        <th>Neg Triggers</th>
-                        <th>Neg Gates</th>
-                        <th>Neg Success %</th>
-                        <th>Advantage</th>
+                        <th>Gap+ Triggers</th>
+                        <th>Gap+ Complete</th>
+                        <th>Gap+ Rate</th>
+                        <th>Gap- Triggers</th>
+                        <th>Gap- Complete</th>
+                        <th>Gap- Rate</th>
+                        <th>Intraday+ Triggers</th>
+                        <th>Intraday+ Complete</th>
+                        <th>Intraday+ Rate</th>
+                        <th>Intraday- Triggers</th>
+                        <th>Intraday- Complete</th>
+                        <th>Intraday- Rate</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>2000</td><td class="neutral">135</td><td class="neutral">71</td><td class="positive">37</td><td class="positive">52.1%</td><td class="neutral">68</td><td class="negative">47</td><td class="negative">69.1%</td><td class="negative">+17.0%</td></tr>
-                    <tr><td>2001</td><td class="neutral">247</td><td class="neutral">109</td><td class="positive">63</td><td class="positive">57.8%</td><td class="neutral">116</td><td class="negative">80</td><td class="negative">69.0%</td><td class="negative">+11.2%</td></tr>
-                    <tr><td>2002</td><td class="neutral">251</td><td class="neutral">108</td><td class="positive">62</td><td class="positive">57.4%</td><td class="neutral">147</td><td class="negative">102</td><td class="negative">69.4%</td><td class="negative">+12.0%</td></tr>
-                    <tr><td>2003</td><td class="neutral">251</td><td class="neutral">127</td><td class="positive">82</td><td class="positive">64.6%</td><td class="neutral">120</td><td class="negative">78</td><td class="negative">65.0%</td><td class="negative">+0.4%</td></tr>
-                    <tr><td>2004</td><td class="neutral">250</td><td class="neutral">91</td><td class="positive">43</td><td class="positive">47.3%</td><td class="neutral">87</td><td class="negative">51</td><td class="negative">58.6%</td><td class="negative">+11.3%</td></tr>
-                    <tr><td>2005</td><td class="neutral">251</td><td class="neutral">111</td><td class="positive">60</td><td class="positive">54.1%</td><td class="neutral">107</td><td class="negative">65</td><td class="negative">60.7%</td><td class="negative">+6.6%</td></tr>
-                    <tr><td>2006</td><td class="neutral">250</td><td class="neutral">69</td><td class="positive">35</td><td class="positive">50.7%</td><td class="neutral">60</td><td class="negative">28</td><td class="negative">46.7%</td><td class="positive">-4.0%</td></tr>
-                    <tr><td>2007</td><td class="neutral">249</td><td class="neutral">60</td><td class="positive">36</td><td class="positive">60.0%</td><td class="neutral">63</td><td class="negative">41</td><td class="negative">65.1%</td><td class="negative">+5.1%</td></tr>
-                    <tr><td>2008</td><td class="neutral">252</td><td class="neutral">114</td><td class="positive">69</td><td class="positive">60.5%</td><td class="neutral">132</td><td class="negative">83</td><td class="negative">62.9%</td><td class="negative">+2.4%</td></tr>
-                    <tr><td>2009</td><td class="neutral">251</td><td class="neutral">113</td><td class="positive">65</td><td class="positive">57.5%</td><td class="neutral">105</td><td class="negative">57</td><td class="negative">54.3%</td><td class="positive">-3.2%</td></tr>
-                    <tr><td>2010</td><td class="neutral">251</td><td class="neutral">113</td><td class="positive">57</td><td class="positive">50.4%</td><td class="neutral">122</td><td class="negative">74</td><td class="negative">60.7%</td><td class="negative">+10.3%</td></tr>
-                    <tr><td>2011</td><td class="neutral">251</td><td class="neutral">119</td><td class="positive">66</td><td class="positive">55.5%</td><td class="neutral">103</td><td class="negative">70</td><td class="negative">68.0%</td><td class="negative">+12.5%</td></tr>
-                    <tr><td>2012</td><td class="neutral">249</td><td class="neutral">107</td><td class="positive">58</td><td class="positive">54.2%</td><td class="neutral">117</td><td class="negative">65</td><td class="negative">55.6%</td><td class="negative">+1.4%</td></tr>
-                    <tr><td>2013</td><td class="neutral">251</td><td class="neutral">122</td><td class="positive">77</td><td class="positive">63.1%</td><td class="neutral">109</td><td class="negative">71</td><td class="negative">65.1%</td><td class="negative">+2.0%</td></tr>
-                    <tr><td>2014</td><td class="neutral">251</td><td class="neutral">121</td><td class="positive">65</td><td class="positive">53.7%</td><td class="neutral">119</td><td class="negative">76</td><td class="negative">63.9%</td><td class="negative">+10.2%</td></tr>
-                    <tr><td>2015</td><td class="neutral">251</td><td class="neutral">98</td><td class="positive">60</td><td class="positive">61.2%</td><td class="neutral">107</td><td class="negative">65</td><td class="negative">60.7%</td><td class="positive">-0.5%</td></tr>
-                    <tr><td>2016</td><td class="neutral">251</td><td class="neutral">106</td><td class="positive">59</td><td class="positive">55.7%</td><td class="neutral">107</td><td class="negative">63</td><td class="negative">58.9%</td><td class="negative">+3.2%</td></tr>
-                    <tr><td>2017</td><td class="neutral">250</td><td class="neutral">113</td><td class="positive">67</td><td class="positive">59.3%</td><td class="neutral">104</td><td class="negative">62</td><td class="negative">59.6%</td><td class="negative">+0.3%</td></tr>
-                    <tr><td>2018</td><td class="neutral">250</td><td class="neutral">112</td><td class="positive">76</td><td class="positive">67.9%</td><td class="neutral">113</td><td class="negative">73</td><td class="negative">64.6%</td><td class="positive">-3.3%</td></tr>
-                    <tr><td>2019</td><td class="neutral">251</td><td class="neutral">108</td><td class="positive">59</td><td class="positive">54.6%</td><td class="neutral">91</td><td class="negative">58</td><td class="negative">63.7%</td><td class="negative">+9.1%</td></tr>
-                    <tr><td>2020</td><td class="neutral">252</td><td class="neutral">111</td><td class="positive">61</td><td class="positive">55.0%</td><td class="neutral">93</td><td class="negative">52</td><td class="negative">55.9%</td><td class="negative">+0.9%</td></tr>
-                    <tr><td>2021</td><td class="neutral">251</td><td class="neutral">116</td><td class="positive">69</td><td class="positive">59.5%</td><td class="neutral">94</td><td class="negative">60</td><td class="negative">63.8%</td><td class="negative">+4.3%</td></tr>
-                    <tr><td>2022</td><td class="neutral">250</td><td class="neutral">108</td><td class="positive">64</td><td class="positive">59.3%</td><td class="neutral">128</td><td class="negative">76</td><td class="negative">59.4%</td><td class="negative">+0.1%</td></tr>
-                    <tr><td>2023</td><td class="neutral">249</td><td class="neutral">123</td><td class="positive">77</td><td class="positive">62.6%</td><td class="neutral">107</td><td class="negative">69</td><td class="negative">64.5%</td><td class="negative">+1.9%</td></tr>
-                    <tr><td>2024</td><td class="neutral">251</td><td class="neutral">129</td><td class="positive">85</td><td class="positive">65.9%</td><td class="neutral">87</td><td class="negative">54</td><td class="negative">62.1%</td><td class="positive">-3.8%</td></tr>
-                    <tr><td>2025</td><td class="neutral">108</td><td class="neutral">40</td><td class="positive">26</td><td class="positive">65.0%</td><td class="neutral">46</td><td class="negative">30</td><td class="negative">65.2%</td><td class="negative">+0.2%</td></tr>
-               </tbody>
-           </table>
+                    <tr>
+                        <td>SPY</td>
+                        <td class="neutral">6,344</td>
+                        <td class="neutral">313</td>
+                        <td class="positive">256</td>
+                        <td class="positive">81.8%</td>
+                        <td class="neutral">317</td>
+                        <td class="negative">272</td>
+                        <td class="negative">85.8%</td>
+                        <td class="neutral">2,786</td>
+                        <td class="positive">1,549</td>
+                        <td class="positive">55.6%</td>
+                        <td class="neutral">2,690</td>
+                        <td class="negative">1,584</td>
+                        <td class="negative">58.9%</td>
+                    </tr>
+                    <tr>
+                        <td>QQQ</td>
+                        <td class="neutral">6,346</td>
+                        <td class="neutral">330</td>
+                        <td class="positive">263</td>
+                        <td class="positive">79.7%</td>
+                        <td class="neutral">320</td>
+                        <td class="negative">261</td>
+                        <td class="negative">81.6%</td>
+                        <td class="neutral">3,058</td>
+                        <td class="positive">1,656</td>
+                        <td class="positive">54.2%</td>
+                        <td class="neutral">2,885</td>
+                        <td class="negative">1,669</td>
+                        <td class="negative">57.9%</td>
+                    </tr>
+                </tbody>
+            </table>
 
-           <h3 style="color: #e67e22;"><i class="fas fa-chart-line" style="margin-right: 10px;"></i>QQQ (NASDAQ-100 ETF) - Complete Dataset</h3>
-           <table>
-               <thead>
-                   <tr>
-                       <th>Year</th>
-                       <th>Trading Days</th>
-                       <th>Pos Triggers</th>
-                       <th>Pos Gates</th>
-                       <th>Pos Success %</th>
-                       <th>Neg Triggers</th>
-                       <th>Neg Gates</th>
-                       <th>Neg Success %</th>
-                       <th>Advantage</th>
-                   </tr>
-               </thead>
-               <tbody>
-                   <tr><td>2000</td><td class="neutral">135</td><td class="neutral">68</td><td class="positive">31</td><td class="positive">45.6%</td><td class="neutral">78</td><td class="negative">50</td><td class="negative">64.1%</td><td class="negative">+18.5%</td></tr>
-                   <tr><td>2001</td><td class="neutral">247</td><td class="neutral">124</td><td class="positive">64</td><td class="positive">51.6%</td><td class="neutral">118</td><td class="negative">72</td><td class="negative">61.0%</td><td class="negative">+9.4%</td></tr>
-                   <tr><td>2002</td><td class="neutral">251</td><td class="neutral">111</td><td class="positive">60</td><td class="positive">54.1%</td><td class="neutral">152</td><td class="negative">90</td><td class="negative">59.2%</td><td class="negative">+5.1%</td></tr>
-                   <tr><td>2003</td><td class="neutral">251</td><td class="neutral">142</td><td class="positive">88</td><td class="positive">62.0%</td><td class="neutral">126</td><td class="negative">64</td><td class="negative">50.8%</td><td class="positive">-11.2%</td></tr>
-                   <tr><td>2004</td><td class="neutral">251</td><td class="neutral">136</td><td class="positive">80</td><td class="positive">58.8%</td><td class="neutral">121</td><td class="negative">75</td><td class="negative">62.0%</td><td class="negative">+3.2%</td></tr>
-                   <tr><td>2005</td><td class="neutral">252</td><td class="neutral">128</td><td class="positive">63</td><td class="positive">49.2%</td><td class="neutral">118</td><td class="negative">60</td><td class="negative">50.8%</td><td class="negative">+1.6%</td></tr>
-                   <tr><td>2006</td><td class="neutral">250</td><td class="neutral">125</td><td class="positive">65</td><td class="positive">52.0%</td><td class="neutral">122</td><td class="negative">69</td><td class="negative">56.6%</td><td class="negative">+4.6%</td></tr>
-                   <tr><td>2007</td><td class="neutral">250</td><td class="neutral">130</td><td class="positive">70</td><td class="positive">53.8%</td><td class="neutral">110</td><td class="negative">65</td><td class="negative">59.1%</td><td class="negative">+5.3%</td></tr>
-                   <tr><td>2008</td><td class="neutral">252</td><td class="neutral">122</td><td class="positive">66</td><td class="positive">54.1%</td><td class="neutral">134</td><td class="negative">81</td><td class="negative">60.4%</td><td class="negative">+6.3%</td></tr>
-                   <tr><td>2009</td><td class="neutral">251</td><td class="neutral">135</td><td class="positive">79</td><td class="positive">58.5%</td><td class="neutral">107</td><td class="negative">56</td><td class="negative">52.3%</td><td class="positive">-6.2%</td></tr>
-                   <tr><td>2010</td><td class="neutral">251</td><td class="neutral">114</td><td class="positive">56</td><td class="positive">49.1%</td><td class="neutral">117</td><td class="negative">63</td><td class="negative">53.8%</td><td class="negative">+4.7%</td></tr>
-                   <tr><td>2011</td><td class="neutral">251</td><td class="neutral">127</td><td class="positive">64</td><td class="positive">50.4%</td><td class="neutral">111</td><td class="negative">78</td><td class="negative">70.3%</td><td class="negative">+19.9%</td></tr>
-                   <tr><td>2012</td><td class="neutral">249</td><td class="neutral">122</td><td class="positive">70</td><td class="positive">57.4%</td><td class="neutral">110</td><td class="negative">68</td><td class="negative">61.8%</td><td class="negative">+4.4%</td></tr>
-                   <tr><td>2013</td><td class="neutral">251</td><td class="neutral">131</td><td class="positive">72</td><td class="positive">55.0%</td><td class="neutral">110</td><td class="negative">62</td><td class="negative">56.4%</td><td class="negative">+1.4%</td></tr>
-                   <tr><td>2014</td><td class="neutral">251</td><td class="neutral">121</td><td class="positive">69</td><td class="positive">57.0%</td><td class="neutral">121</td><td class="negative">80</td><td class="negative">66.1%</td><td class="negative">+9.1%</td></tr>
-                   <tr><td>2015</td><td class="neutral">251</td><td class="neutral">106</td><td class="positive">57</td><td class="positive">53.8%</td><td class="neutral">105</td><td class="negative">72</td><td class="negative">68.6%</td><td class="negative">+14.8%</td></tr>
-                   <tr><td>2016</td><td class="neutral">251</td><td class="neutral">104</td><td class="positive">60</td><td class="positive">57.7%</td><td class="neutral">113</td><td class="negative">67</td><td class="negative">59.3%</td><td class="negative">+1.6%</td></tr>
-                   <tr><td>2017</td><td class="neutral">250</td><td class="neutral">125</td><td class="positive">69</td><td class="positive">55.2%</td><td class="neutral">101</td><td class="negative">59</td><td class="negative">58.4%</td><td class="negative">+3.2%</td></tr>
-                   <tr><td>2018</td><td class="neutral">250</td><td class="neutral">131</td><td class="positive">76</td><td class="positive">58.0%</td><td class="neutral">111</td><td class="negative">75</td><td class="negative">67.6%</td><td class="negative">+9.6%</td></tr>
-                   <tr><td>2019</td><td class="neutral">251</td><td class="neutral">110</td><td class="positive">69</td><td class="positive">62.7%</td><td class="neutral">97</td><td class="negative">57</td><td class="negative">58.8%</td><td class="positive">-3.9%</td></tr>
-                   <tr><td>2020</td><td class="neutral">252</td><td class="neutral">135</td><td class="positive">75</td><td class="positive">55.6%</td><td class="neutral">91</td><td class="negative">62</td><td class="negative">68.1%</td><td class="negative">+12.5%</td></tr>
-                   <tr><td>2021</td><td class="neutral">251</td><td class="neutral">125</td><td class="positive">76</td><td class="positive">60.8%</td><td class="neutral">104</td><td class="negative">68</td><td class="negative">65.4%</td><td class="negative">+4.6%</td></tr>
-                   <tr><td>2022</td><td class="neutral">250</td><td class="neutral">111</td><td class="positive">63</td><td class="positive">56.8%</td><td class="neutral">125</td><td class="negative">83</td><td class="negative">66.4%</td><td class="negative">+9.6%</td></tr>
-                   <tr><td>2023</td><td class="neutral">249</td><td class="neutral">124</td><td class="positive">80</td><td class="positive">64.5%</td><td class="neutral">112</td><td class="negative">67</td><td class="negative">59.8%</td><td class="positive">-4.7%</td></tr>
-                   <tr><td>2024</td><td class="neutral">251</td><td class="neutral">119</td><td class="positive">81</td><td class="positive">68.1%</td><td class="neutral">95</td><td class="negative">53</td><td class="negative">55.8%</td><td class="positive">-12.3%</td></tr>
-                   <tr><td>2025</td><td class="neutral">108</td><td class="neutral">40</td><td class="positive">23</td><td class="positive">57.5%</td><td class="neutral">47</td><td class="negative">30</td><td class="negative">63.8%</td><td class="negative">+6.3%</td></tr>
-               </tbody>
-           </table>
-       </div>
+            <h3 style="color: #2c3e50; margin-top: 50px;"><i class="fas fa-calculator" style="margin-right: 10px;"></i>Combined Success Rates Summary</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Combined Positive Rate</th>
+                        <th>Combined Negative Rate</th>
+                        <th>Negative Advantage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>SPY</td>
+                        <td class="positive">58.2%</td>
+                        <td class="negative">61.7%</td>
+                        <td class="highlight negative">+3.5%</td>
+                    </tr>
+                    <tr>
+                        <td>QQQ</td>
+                        <td class="positive">56.6%</td>
+                        <td class="negative">60.2%</td>
+                        <td class="highlight negative">+3.6%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-       <div class="footer">
-           <p><strong>Data Analysis Period:</strong> June 19, 2000 - June 10, 2025</p>
-           <p><strong>Total Trading Days Analyzed:</strong> SPY: 6,251 days | QQQ: 6,253 days</p>
-           <p><strong>Methodology:</strong> Golden Gate analysis tracks 38.2% Fibonacci retracement level interactions and subsequent price movements</p>
-           <p><strong>Key Metrics:</strong> Positive/Negative triggers represent touches of the 38.2% level, Gates represent successful follow-through moves</p>
-           <p><strong>Advantage:</strong> Represents the percentage point difference between negative and positive success rates (positive advantage favors negative triggers)</p>
-           <p>Generated from comprehensive CSV analysis • <a href="index.html">Return to Main Analysis</a></p>
-       </div>
-   </div>
+        <div class="footer">
+            <p><strong>Enhanced Analysis Period:</strong> January 19, 2000 - June 11, 2025 (Excludes first 14 days for proper ATR warm-up)</p>
+            <p><strong>Total Trading Days Analyzed:</strong> SPY: 6,344 days | QQQ: 6,346 days</p>
+            <p><strong>Methodology:</strong> Enhanced Golden Gate analysis with proper 14-period ATR calculations using Pine Script RMA methodology</p>
+            <p><strong>Gap-Open vs Intraday:</strong> Gap-open scenarios show 80-85% success rates vs 55-58% for intraday triggers</p>
+            <p><strong>Key Improvement:</strong> Corrected ATR warm-up period ensures all calculations use proper 14-period values</p>
+            <p><strong>Negative Advantage:</strong> Consistent 3.5-3.6% advantage for negative momentum across both ETFs</p>
+            <p>Generated from enhanced IBKR dataset with corrected methodology • <a href="index.html">Return to Main Analysis</a></p>
+        </div>
+    </div>
 </body>
 </html>
