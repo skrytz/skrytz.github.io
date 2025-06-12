@@ -52,6 +52,10 @@ data/logs/
 # Data files (keep structure but ignore large data)
 data/ticker_data/
 data/analysis/*.csv
+data/analysis_results/*.csv
+
+# All CSV files
+*.csv
 
 # Temporary files
 *.tmp

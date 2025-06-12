@@ -124,6 +124,9 @@ def analyze_ticker_data(ticker, data_file):
         
         # Calculate ATR using corrected Pine Script methodology
         data['atr'] = calculate_atr_pine_script(data['high'], data['low'], data['close'], 14)
+        # Remove first 14 rows to ensure proper ATR calculation (14-period warm-up)
+        # The first 13 ATR values use insufficient data (1-13 days instead of 14)
+        data = data.iloc[14:].reset_index(drop=True)
         data = data.dropna(subset=['atr']).reset_index(drop=True)
         
         print(f"  Using {len(data):,} records after ATR calculation")
@@ -297,8 +300,8 @@ def main():
     
     # Define tickers and their data files
     tickers = {
-        'SPY': 'data/ticker_data/SPY/SPY_2000_to_present_IBKR.csv',
-        'QQQ': 'data/ticker_data/QQQ/QQQ_2000_to_present_IBKR.csv'
+        'SPY': '../../data/ticker_data/SPY/daily/SPY_daily_2000_to_present.csv',
+        'QQQ': '../../data/ticker_data/QQQ/daily/QQQ_daily_2000_to_present.csv'
     }
     
     all_results = {}

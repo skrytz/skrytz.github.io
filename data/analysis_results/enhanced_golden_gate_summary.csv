@@ -1,3 +1,0 @@
-ticker,analysis_date,methodology,total_trading_days,years_analyzed,date_range,gap_open_positive,gap_open_positive_complete,gap_open_positive_rate,gap_open_negative,gap_open_negative_complete,gap_open_negative_rate,intraday_positive,intraday_positive_complete,intraday_positive_rate,intraday_negative,intraday_negative_complete,intraday_negative_rate,combined_positive_rate,combined_negative_rate,negative_advantage
-SPY,2025-06-11 07:23:01,Enhanced Gap-Open Analysis,6254,26,2000-2025,923,688,74.5,751,563,75.0,2090,1088,52.1,2131,1210,56.8,58.9,61.5,2.6
-QQQ,2025-06-11 07:23:01,Enhanced Gap-Open Analysis,6257,26,2000-2025,911,682,74.9,713,541,75.9,2415,1210,50.1,2354,1317,55.9,56.9,60.6,3.7
