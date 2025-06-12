@@ -316,7 +316,7 @@
             <div class="stat-card intraday">
                 <div class="stat-number">3,093</div>
                 <div class="stat-label">Intraday Triggers</div>
-                <div class="stat-description">State-managed intraday triggers (proper OPEN/CLOSED logic)</div>
+                <div class="stat-description">Market opens between ±38.2% ATR, then hits trigger levels during the day</div>
             </div>
             <div class="stat-card gap-open">
                 <div class="stat-number">1,129</div>
@@ -666,8 +666,11 @@
                     <li><strong>Trigger Levels:</strong> ±38.2% ATR from previous day's close</li>
                     <li><strong>Target Levels:</strong> ±61.8% ATR from previous day's close</li>
                     <li><strong>Time Buckets:</strong> 30-minute intervals for precise completion tracking</li>
-                    <li><strong>Gap-Open Definition:</strong> Market open beyond trigger levels at 9:30 AM</li>
-                    <li><strong>Intraday Triggers:</strong> Touch of trigger levels during trading session (excluding gap-opens)</li>
+                    <li><strong>Actionable Gap-Opens:</strong> Market opens between ±38.2% and ±61.8% ATR (tradeable scenarios)</li>
+                    <li><strong>GG Completed at Open:</strong> Market opens beyond ±61.8% ATR (Golden Gate already completed)</li>
+                    <li><strong>Double Completions:</strong> GG completed at open, then retraces and completes again</li>
+                    <li><strong>State Management:</strong> Proper OPEN/CLOSED logic prevents double-counting opportunities</li>
+                    <li><strong>Intraday Triggers:</strong> Touch of trigger levels during session (max 2 states per day)</li>
                     <li><strong>Success Criteria:</strong> Reaching target levels within same trading day</li>
                 </ul>
             </div>
