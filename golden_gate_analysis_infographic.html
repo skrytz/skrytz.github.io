@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Gate Analysis - Three Analysis Types</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
+            line-height: 1.7;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 80px;
+            padding: 60px 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 6px solid #3498db;
+            position: relative;
+        }
+        
+        .nav-links {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            background: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .nav-link:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-family: 'Georgia', serif;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            color: #7f8c8d;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: #3498db;
+            margin-bottom: 10px;
+            font-family: 'Georgia', serif;
+        }
+        
+        .stat-label {
+            font-size: 1.1em;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+        
+        .analysis-section {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        
+        .analysis-header {
+            padding: 30px;
+            color: white;
+            position: relative;
+        }
+        
+        .intraday-header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .gap-header {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+        
+        .double-header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .analysis-header h2 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        .analysis-header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .analysis-content {
+            padding: 30px;
+        }
+        
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+        
+        .code-example {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        
+        .code-example h4 {
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .code-example pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+        
+        .example-scenario {
+            background: #f0f4f8;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .example-scenario h4 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-step {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        .success-rates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .success-card {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .success-rate {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .comparison-chart {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .key-insights {
+            background: #2c3e50;
+            color: white;
+            border-radius: 20px;
+            padding: 60px;
+            margin: 60px 0;
+        }
+        
+        .key-insights h3 {
+            margin-bottom: 40px;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-align: center;
+            font-family: 'Georgia', serif;
+        }
+        
+        .insight-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+        
+        .footer {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-top: 60px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 6px solid #95a5a6;
+        }
+        
+        .footer p {
+            color: #7f8c8d;
+            margin: 12px 0;
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="data.html" class="nav-link">
+                    <i class="fas fa-table"></i> Detailed Data
+                </a>
+            </div>
+            <h1>Golden Gate Analysis</h1>
+            <p>State-Managed Trading Analysis - SPX 10-Minute Data (2004-2025)</p>
+        </div>
+        
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-number">210,233</div>
+                <div class="stat-label">10-Minute Bars Analyzed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">5,351</div>
+                <div class="stat-label">Trading Days</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">6,057</div>
+                <div class="stat-label">Total Events Found</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Analysis Types</div>
+            </div>
+        </div>
+        
+        <!-- INTRADAY ANALYSIS -->
+        <div class="analysis-section">
+            <div class="analysis-header intraday-header">
+                <h2>1. Intraday Analysis</h2>
+                <p>Detects trigger touches during regular trading hours (not at market open)</p>
+            </div>
+            <div class="analysis-content">
+                <div class="analysis-grid">
+                    <div>
+                        <div class="code-example">
+                            <h4>Detection Logic:</h4>
+                            <pre><code>if (not positive_state_open and 
+    not positive_state_closed and
+    not gg_already_completed_at_open and
+    row['high'] >= levels['trigger_upper']):
+    
+    # INTRADAY TRIGGER DETECTED
+    positive_state_open = True</code></pre>
+                        </div>
+                        
+                        <div class="example-scenario">
+                            <h4>Example Scenario:</h4>
+                            <div class="scenario-step">📊 Previous Close: $4,500</div>
+                            <div class="scenario-step">📏 Previous ATR: $50</div>
+                            <div class="scenario-step">🎯 Trigger Level: $4,519.1 (+38.2%)</div>
+                            <div class="scenario-step">🏁 Target Level: $4,530.9 (+61.8%)</div>
+                            <div class="scenario-step">⏰ 11:20 AM: Price touches $4,519.1</div>
+                            <div class="scenario-step">✅ INTRADAY TRIGGER ACTIVATED</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="intradayChart"></canvas>
+                        </div>
+                        
+                        <div class="success-rates">
+                            <div class="success-card">
+                                <div class="success-rate">3,093</div>
+                                <div>Total Events</div>
+                            </div>
+                            <div class="success-card">
+                                <div class="success-rate">43.7%</div>
+                                <div>Average Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- GAP UP ANALYSIS -->
+        <div class="analysis-section">
+            <div class="analysis-header gap-header">
+                <h2>2. Gap Up Analysis</h2>
+                <p>Market opens between ±38.2% trigger and ±61.8% target levels</p>
+            </div>
+            <div class="analysis-content">
+                <div class="analysis-grid">
+                    <div>
+                        <div class="code-example">
+                            <h4>Detection Logic:</h4>
+                            <pre><code>elif open_price > levels['trigger_upper']:
+    gap_open_type = 'positive'
+    positive_state_open = True
+    
+elif open_price < levels['trigger_lower']:
+    gap_open_type = 'negative'
+    negative_state_open = True</code></pre>
+                        </div>
+                        
+                        <div class="example-scenario">
+                            <h4>Example Scenario:</h4>
+                            <div class="scenario-step">📊 Previous Close: $4,500</div>
+                            <div class="scenario-step">🎯 Trigger Level: $4,519.1</div>
+                            <div class="scenario-step">🏁 Target Level: $4,530.9</div>
+                            <div class="scenario-step">🌅 Market Opens: $4,525</div>
+                            <div class="scenario-step">📍 (Between trigger and target)</div>
+                            <div class="scenario-step">✅ GAP UP DETECTED</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="gapChart"></canvas>
+                        </div>
+                        
+                        <div class="success-rates">
+                            <div class="success-card">
+                                <div class="success-rate">1,033</div>
+                                <div>Total Events</div>
+                            </div>
+                            <div class="success-card">
+                                <div class="success-rate">86.2%</div>
+                                <div>Average Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DOUBLE COMPLETION ANALYSIS -->
+        <div class="analysis-section">
+            <div class="analysis-header double-header">
+                <h2>3. Double Completion Analysis</h2>
+                <p>GG completed at open, retraces, then triggers again intraday</p>
+            </div>
+            <div class="analysis-content">
+                <div class="analysis-grid">
+                    <div>
+                        <div class="code-example">
+                            <h4>Detection Logic:</h4>
+                            <pre><code>elif (gg_already_completed_at_open and 
+      gg_completed_at_open_type == 'positive_completed' and
+      positive_retraced_below_trigger and
+      not positive_state_open and
+      row['high'] >= levels['trigger_upper']):
+    
+    # DOUBLE COMPLETION DETECTED</code></pre>
+                        </div>
+                        
+                        <div class="example-scenario">
+                            <h4>Example Scenario:</h4>
+                            <div class="scenario-step">🌅 Market Opens: $4,540 (beyond target)</div>
+                            <div class="scenario-step">✅ GG COMPLETED AT OPEN</div>
+                            <div class="scenario-step">📉 Price retraces to $4,515</div>
+                            <div class="scenario-step">📈 2:30 PM: Price rises to $4,519.1</div>
+                            <div class="scenario-step">🔄 DOUBLE COMPLETION TRIGGER</div>
+                            <div class="scenario-step">🎯 Tracks second completion</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="chart-container">
+                            <canvas id="doubleChart"></canvas>
+                        </div>
+                        
+                        <div class="success-rates">
+                            <div class="success-card">
+                                <div class="success-rate">802</div>
+                                <div>Total Events</div>
+                            </div>
+                            <div class="success-card">
+                                <div class="success-rate">94.4%</div>
+                                <div>Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- COMPARISON CHART -->
+        <div class="comparison-chart">
+            <h3 style="text-align: center; margin-bottom: 30px; color: #2d3748;">Success Rate Comparison</h3>
+            <div class="chart-container">
+                <canvas id="comparisonChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- KEY INSIGHTS -->
+<div class="key-insights">
+            <h3>🔍 Key Insights</h3>
+            <div class="insight-item">
+                <strong>Highest Success Rate:</strong> Double Completions achieve 94.4% success rate, indicating strong momentum continuation after initial Golden Gate completion.
+            </div>
+            <div class="insight-item">
+                <strong>Gap Analysis Performance:</strong> Gap-up scenarios show 86.2% average success rate, significantly higher than intraday triggers (43.7%).
+            </div>
+            <div class="insight-item">
+                <strong>State Management Impact:</strong> Proper OPEN/CLOSED state management with maximum 2 states per day prevents over-trading and improves signal quality.
+            </div>
+            <div class="insight-item">
+                <strong>Market Behavior:</strong> 71% of Golden Gate completions at open lead to double completion opportunities, showing strong trend persistence.
+            </div>
+            <div class="insight-item">
+                <strong>ATR Levels:</strong> The 38.2% trigger and 61.8% target levels based on previous day's ATR provide effective support/resistance zones.
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Golden Gate Analysis • State-Managed Trading System • SPX 10-Minute Data Analysis</p>
+            <p>Data Period: 2004-2025 • Total Bars: 210,233 • Analysis Date: June 2025</p>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js configuration
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        Chart.defaults.font.size = 12;
+
+        // Intraday Analysis Chart
+        const intradayCtx = document.getElementById('intradayChart').getContext('2d');
+        new Chart(intradayCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Positive Triggers (40.8%)', 'Negative Triggers (46.6%)', 'Failed Triggers'],
+                datasets: [{
+                    data: [633, 718, 1742],
+                    backgroundColor: ['#ff6b6b', '#ee5a24', '#ddd'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Intraday Trigger Results',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gap Analysis Chart
+        const gapCtx = document.getElementById('gapChart').getContext('2d');
+        new Chart(gapCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Positive Gaps', 'Negative Gaps'],
+                datasets: [{
+                    label: 'Completed',
+                    data: [480, 407],
+                    backgroundColor: '#4ecdc4',
+                    borderColor: '#44a08d',
+                    borderWidth: 2
+                }, {
+                    label: 'Failed',
+                    data: [96, 50],
+                    backgroundColor: '#ddd',
+                    borderColor: '#bbb',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Gap-Open Results',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stacked: true
+                    },
+                    x: {
+                        stacked: true
+                    }
+                }
+            }
+        });
+
+        // Double Completion Chart
+        const doubleCtx = document.getElementById('doubleChart').getContext('2d');
+        new Chart(doubleCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Positive Double (94.3%)', 'Negative Double (94.5%)', 'Failed'],
+                datasets: [{
+                    data: [416, 341, 45],
+                    backgroundColor: ['#a8e6cf', '#7fcdcd', '#ddd'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Double Completion Results',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Comparison Chart
+        const comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
+        new Chart(comparisonCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Intraday Analysis', 'Gap-Up Analysis', 'Double Completion'],
+                datasets: [{
+                    label: 'Success Rate (%)',
+                    data: [43.7, 86.2, 94.4],
+                    backgroundColor: [
+                        'rgba(255, 107, 107, 0.8)',
+                        'rgba(78, 205, 196, 0.8)',
+                        'rgba(168, 230, 207, 0.8)'
+                    ],
+                    borderColor: [
+                        '#ff6b6b',
+                        '#4ecdc4',
+                        '#a8e6cf'
+                    ],
+                    borderWidth: 2
+                }, {
+                    label: 'Total Events',
+                    data: [3093, 1033, 802],
+                    type: 'line',
+                    yAxisID: 'y1',
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                if (context.datasetIndex === 0) {
+                                    const events = [3093, 1033, 802][context.dataIndex];
+                                    return `Total Events: ${events}`;
+                                }
+                                return '';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Success Rate (%)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Total Events'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
+
+        // Add hover effects to stat cards
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Add click effects to analysis sections
+        document.querySelectorAll('.analysis-section').forEach(section => {
+            section.addEventListener('click', function() {
+                this.style.transform = 'scale(1.01)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+
+        // Smooth scrolling for better UX
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Add loading animation
+        window.addEventListener('load', function() {
+            document.querySelectorAll('.analysis-section').forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(50px)';
+                
+                setTimeout(() => {
+                    section.style.transition = 'all 0.6s ease';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>
