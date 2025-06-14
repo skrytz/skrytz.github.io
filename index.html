@@ -35,29 +35,59 @@
             position: relative;
         }
 
-        .nav-links {
-            position: absolute;
-            top: 20px;
-            right: 30px;
+        .top-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(52, 152, 219, 0.1);
+            padding: 15px 0;
+            margin-bottom: 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
         }
 
         .nav-link {
-            background: #3498db;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
+            background: transparent;
+            color: #2c3e50;
+            padding: 10px 16px;
+            border-radius: 6px;
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
         }
 
         .nav-link:hover {
-            background: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+            background: #3498db;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .nav-link.active {
+            background: #3498db;
+            color: white;
         }
         
         .header h1 {
@@ -497,19 +527,31 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-chart-line"></i> SATY Analytics
+            </a>
             <div class="nav-links">
-                <a href="golden_gate_analysis_infographic.html" class="nav-link">
-                    <i class="fas fa-chart-line"></i> Analysis Guide
+                <a href="index.html" class="nav-link active">
+                    <i class="fas fa-home"></i> Home
                 </a>
                 <a href="data.html" class="nav-link">
-                    <i class="fas fa-table"></i> Detailed Data
+                    <i class="fas fa-table"></i> Data
+                </a>
+                <a href="golden_gate_analysis_infographic.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i> Analysis
                 </a>
                 <a href="ml.html" class="nav-link">
                     <i class="fas fa-brain"></i> ML
                 </a>
             </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
             <h1>Golden Gate Analysis</h1>
             <div class="subtitle">A Comprehensive 25-Year Multi-Ticker Study with Gap-Open Methodology</div>
             <div class="period">2000 - 2025 • 6,340+ Trading Days • Proper ATR Warm-up • Gap-Open vs Intraday Analysis</div>
