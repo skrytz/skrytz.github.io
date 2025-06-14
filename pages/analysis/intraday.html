@@ -4,6 +4,7 @@
     <title>Intraday Golden Gate Analysis - SPX 10-Minute Data</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="../../assets/js/components/navigation.js"></script>
     <style>
         * {
             margin: 0;
@@ -35,30 +36,7 @@
             position: relative;
         }
 
-        .nav-links {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            display: flex;
-            gap: 15px;
-        }
-
-        .nav-link {
-            background: #3498db;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        }
-
-        .nav-link:hover {
-            background: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
-        }
+        /* Navigation styles are now handled by js/navigation.js */
         
         .header h1 {
             font-size: 3rem;
@@ -292,22 +270,10 @@
     </style>
 </head>
 <body>
+    <!-- Navigation will be inserted here by js/navigation.js -->
+    
     <div class="container">
         <div class="header">
-            <div class="nav-links">
-                <a href="index.html" class="nav-link">
-                    <i class="fas fa-home"></i> Home
-                </a>
-                <a href="golden_gate_analysis_infographic.html" class="nav-link">
-                    <i class="fas fa-chart-line"></i> Analysis
-                </a>
-                <a href="ml.html" class="nav-link">
-                    <i class="fas fa-brain"></i> ML
-                </a>
-                <a href="data.html" class="nav-link">
-                    <i class="fas fa-database"></i> Data
-                </a>
-            </div>
             <h1><i class="fas fa-clock"></i> Intraday Golden Gate Analysis</h1>
             <div class="subtitle">SPX 10-Minute Data Analysis with 30-Minute Time Buckets</div>
             <div class="period">Gap-Open vs Intraday Trigger Scenarios | 2004-2025 | 210K+ Records | State-Managed Analysis</div>

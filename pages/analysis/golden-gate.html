@@ -6,6 +6,7 @@
     <title>Golden Gate Analysis - Three Analysis Types</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="../../assets/js/components/navigation.js"></script>
     <style>
         * {
             margin: 0;
@@ -37,60 +38,7 @@
             position: relative;
         }
         
-        .top-nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(52, 152, 219, 0.1);
-            padding: 15px 0;
-            margin-bottom: 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #2c3e50;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 8px;
-        }
-
-        .nav-link {
-            background: transparent;
-            color: #2c3e50;
-            padding: 10px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-            border: 1px solid transparent;
-        }
-
-        .nav-link:hover {
-            background: #3498db;
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        .nav-link.active {
-            background: #3498db;
-            color: white;
-        }
+        /* Navigation styles are now handled by js/navigation.js */
         
         .header h1 {
             font-size: 3rem;
@@ -322,29 +270,8 @@
     </style>
 </head>
 <body>
-    <!-- Top Navigation -->
-    <nav class="top-nav">
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <i class="fas fa-chart-line"></i> SATY Analytics
-            </a>
-            <div class="nav-links">
-                <a href="index.html" class="nav-link">
-                    <i class="fas fa-home"></i> Home
-                </a>
-                <a href="golden_gate_analysis_infographic.html" class="nav-link active">
-                    <i class="fas fa-chart-line"></i> Analysis
-                </a>
-                <a href="ml.html" class="nav-link">
-                    <i class="fas fa-brain"></i> ML
-                </a>
-                <a href="data.html" class="nav-link">
-                    <i class="fas fa-table"></i> Data
-                </a>
-            </div>
-        </div>
-    </nav>
-
+    <!-- Navigation will be inserted here by js/navigation.js -->
+    
     <div class="container">
         <div class="header">
             <h1>Golden Gate Analysis</h1>
@@ -353,11 +280,11 @@
         
         <div class="stats-overview">
             <div class="stat-card">
-                <div class="stat-number">210,233</div>
+                <div class="stat-number">210,345</div>
                 <div class="stat-label">10-Minute Bars Analyzed</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">5,351</div>
+                <div class="stat-number">5,353</div>
                 <div class="stat-label">Trading Days</div>
             </div>
             <div class="stat-card">
@@ -409,7 +336,7 @@
                         
                         <div class="success-rates">
                             <div class="success-card">
-                                <div class="success-rate">4,413</div>
+                                <div class="success-rate">4,414</div>
                                 <div>Total Events</div>
                             </div>
                             <div class="success-card">
@@ -464,7 +391,7 @@ elif open_price < levels['trigger_lower']:
                                 <div>Total Events</div>
                             </div>
                             <div class="success-card">
-                                <div class="success-rate">89.4%</div>
+                                <div class="success-rate">89.3%</div>
                                 <div>Average Success Rate</div>
                             </div>
                         </div>
@@ -516,7 +443,7 @@ elif open_price < levels['trigger_lower']:
                                 <div>Total Events</div>
                             </div>
                             <div class="success-card">
-                                <div class="success-rate">69.4%</div>
+                                <div class="success-rate">69.0%</div>
                                 <div>Success Rate</div>
                             </div>
                         </div>
@@ -537,7 +464,7 @@ elif open_price < levels['trigger_lower']:
 <div class="key-insights">
             <h3>🔍 Key Insights</h3>
             <div class="insight-item">
-                <strong>Highest Success Rate:</strong> Gap-up scenarios achieve 89.4% success rate, while Double Completions show 69.4% success rate - both significantly higher than intraday triggers (60.0%).
+                <strong>Highest Success Rate:</strong> Gap-up scenarios achieve 89.3% success rate, while Double Completions show 69.0% success rate - both significantly higher than intraday triggers (60.0%).
             </div>
             <div class="insight-item">
                 <strong>Corrected Analysis Impact:</strong> Fixing the market open time bug revealed more realistic scenario counts and improved success rates across all categories.
@@ -546,7 +473,7 @@ elif open_price < levels['trigger_lower']:
                 <strong>State Management Impact:</strong> Proper OPEN/CLOSED state management with maximum 2 states per day prevents over-trading and improves signal quality.
             </div>
             <div class="insight-item">
-                <strong>Market Behavior:</strong> 38.6% of Golden Gate completions at open lead to double completion opportunities, with 69.4% success when properly detected.
+                <strong>Market Behavior:</strong> 39.1% of Golden Gate completions at open lead to double completion opportunities, with 69.0% success when properly detected.
             </div>
             <div class="insight-item">
                 <strong>ATR Levels:</strong> The 38.2% trigger and 61.8% target levels based on previous day's ATR provide effective support/resistance zones.
@@ -558,7 +485,7 @@ elif open_price < levels['trigger_lower']:
         
         <div class="footer">
             <p>Golden Gate Analysis • State-Managed Trading System • SPX 10-Minute Data Analysis</p>
-            <p>Data Period: 2004-2025 • Total Bars: 210,233 • Analysis Date: June 2025</p>
+            <p>Data Period: 2004-2025 • Total Bars: 210,345 • Analysis Date: June 2025</p>
         </div>
     </div>
 
