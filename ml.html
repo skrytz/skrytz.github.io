@@ -12,11 +12,11 @@
             box-sizing: border-box;
         }
         
-        body { 
-            font-family: 'Georgia', 'Times New Roman', serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #2c3e50;
-            line-height: 1.7;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #212529;
+            line-height: 1.6;
             min-height: 100vh;
         }
         
@@ -30,22 +30,22 @@
             text-align: center;
             margin-bottom: 80px;
             padding: 60px 40px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-left: 6px solid #3498db;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 6px solid #0d6efd;
             position: relative;
         }
 
         .top-nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(52, 152, 219, 0.1);
-            padding: 15px 0;
-            margin-bottom: 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 16px 0;
+            margin-bottom: 24px;
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
         }
 
         .nav-container {
@@ -60,7 +60,7 @@
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #2c3e50;
+            color: #212529;
             text-decoration: none;
         }
 
@@ -71,9 +71,9 @@
 
         .nav-link {
             background: transparent;
-            color: #2c3e50;
+            color: #495057;
             padding: 10px 16px;
-            border-radius: 6px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 500;
             font-size: 0.95rem;
@@ -82,47 +82,48 @@
         }
 
         .nav-link:hover {
-            background: #3498db;
+            background: #0d6efd;
             color: white;
             transform: translateY(-1px);
         }
 
         .nav-link.active {
-            background: #3498db;
+            background: #0d6efd;
             color: white;
         }
         
         .header h1 {
             font-size: 3.2rem;
             font-weight: 700;
-            color: #2c3e50;
+            color: #212529;
             margin-bottom: 20px;
             font-family: 'Georgia', serif;
         }
         
         .header .subtitle {
             font-size: 1.4rem;
-            color: #7f8c8d;
+            color: #6c757d;
             margin-bottom: 12px;
             font-style: italic;
         }
         
         .section {
-            background: white;
-            border-radius: 20px;
-            padding: 50px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-left: 6px solid #3498db;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 6px solid #0d6efd;
         }
         
         .section h2 {
-            font-size: 2.5rem;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 15px;
+            font-size: 2.2rem;
+            color: #212529;
+            margin-bottom: 28px;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 12px;
             text-align: center;
+            font-weight: 600;
         }
         
         .combination-grid {
@@ -134,49 +135,50 @@
         }
         
         .saty-side {
-            background: linear-gradient(135deg, #e8f4fd 0%, #d1e7f0 100%);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             padding: 30px;
-            border-radius: 15px;
-            border-left: 5px solid #3498db;
+            border-radius: 12px;
+            border-left: 6px solid #0d6efd;
         }
         
         .lstm-side {
-            background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             padding: 30px;
-            border-radius: 15px;
-            border-left: 5px solid #2980b9;
+            border-radius: 12px;
+            border-left: 6px solid #6f42c1;
         }
         
         .combination-arrow {
             text-align: center;
             font-size: 3rem;
-            color: #3498db;
+            color: #0d6efd;
             margin: 20px 0;
             grid-column: 1 / -1;
         }
         
         .result-box {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            background: linear-gradient(135deg, #0d6efd 0%, #6f42c1 100%);
             color: white;
-            padding: 40px;
-            border-radius: 20px;
+            padding: 32px;
+            border-radius: 12px;
             text-align: center;
-            margin: 30px 0;
+            margin: 24px 0;
             grid-column: 1 / -1;
         }
         
         .feature-highlight {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 25px;
-            border-radius: 12px;
-            margin: 20px 0;
-            border-left: 4px solid #3498db;
+            padding: 24px;
+            border-radius: 8px;
+            margin: 16px 0;
+            border-left: 4px solid #0d6efd;
         }
         
         .feature-highlight h4 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
+            color: #212529;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
         
         @media (max-width: 768px) {
@@ -247,25 +249,25 @@
                     </div>
                     
                     <div style="display: grid; gap: 20px;">
-                        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-left: 4px solid #e74c3c;">
+                        <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border-left: 6px solid #dc3545;">
                             <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                                <div style="background: #e74c3c; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.2rem;">🎀</div>
+                                <div style="background: #dc3545; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.2rem;">🎀</div>
                                 <h4 style="color: #2c3e50; margin: 0; font-size: 1.1rem;">SATY Ribbon System</h4>
                             </div>
                             <p style="color: #555; margin: 0; line-height: 1.5; font-size: 0.95rem;">Five exponential moving averages (8, 13, 21, 48, 200) plus VWAP create dynamic support and resistance levels that adapt to market conditions in real-time. Crossovers between these EMAs generate bullish and bearish signals, with faster EMAs crossing above or below slower ones indicating potential trend changes.</p>
                         </div>
                         
-                        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-left: 4px solid #f39c12;">
+                        <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border-left: 6px solid #fd7e14;">
                             <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                                <div style="background: #f39c12; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.2rem;">🎯</div>
+                                <div style="background: #fd7e14; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.2rem;">🎯</div>
                                 <h4 style="color: #2c3e50; margin: 0; font-size: 1.1rem;">Golden Gate ATR Levels</h4>
                             </div>
                             <p style="color: #555; margin: 0; line-height: 1.5; font-size: 0.95rem;">Volatility-based targeting using Average True Range with Fibonacci retracements provides precise entry and exit points. Gap ups and gap downs are measured against ATR levels to identify significant price movements and potential reversal zones.</p>
                         </div>
                         
-                        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-left: 4px solid #3498db;">
+                        <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border-left: 6px solid #0dcaf0;">
                             <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                                <div style="background: #3498db; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.2rem;">🌊</div>
+                                <div style="background: #0dcaf0; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.2rem;">🌊</div>
                                 <h4 style="color: #2c3e50; margin: 0; font-size: 1.1rem;">Phase Oscillator Analysis</h4>
                             </div>
                             <p style="color: #555; margin: 0; line-height: 1.5; font-size: 0.95rem;">Advanced momentum indicators that detect both regular divergences (price vs oscillator disagreement signaling trend reversals) and hidden divergences (continuation patterns within trends). These features capture market phases, overbought/oversold conditions, and momentum shifts that traditional analysis might miss.</p>
@@ -283,7 +285,7 @@
                     </div>
                     
                     <div style="display: grid; gap: 20px;">
-                        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-left: 4px solid #27ae60;">
+                        <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border-left: 6px solid #27ae60;">
                             <div style="display: flex; align-items: center; margin-bottom: 12px;">
                                 <div style="background: #27ae60; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.2rem;">🧠</div>
                                 <h4 style="color: #2c3e50; margin: 0; font-size: 1.1rem;">Pattern Recognition</h4>
@@ -291,17 +293,17 @@
                             <p style="color: #555; margin: 0; line-height: 1.5; font-size: 0.95rem;">Bidirectional LSTM networks excel at finding complex temporal patterns in SATY feature sequences that traditional analysis might miss. The architecture processes information both forward and backward through time, capturing long-term dependencies between EMA crossovers, divergence signals, and market regime changes.</p>
                         </div>
                         
-                        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-left: 4px solid #9b59b6;">
+                        <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border-left: 6px solid #6f42c1;">
                             <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                                <div style="background: #9b59b6; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.2rem;">👁️</div>
+                                <div style="background: #6f42c1; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.2rem;">👁️</div>
                                 <h4 style="color: #2c3e50; margin: 0; font-size: 1.1rem;">Multi-Head Attention</h4>
                             </div>
                             <p style="color: #555; margin: 0; line-height: 1.5; font-size: 0.95rem;">Eight-head attention mechanism automatically focuses on the most relevant SATY indicators and time periods for each prediction. This transformer-inspired component learns which combinations of ribbon signals, ATR levels, and oscillator states are most predictive for current market conditions.</p>
                         </div>
                         
-                        <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-left: 4px solid #e67e22;">
+                        <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border-left: 6px solid #d63384;">
                             <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                                <div style="background: #e67e22; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.2rem;">❓</div>
+                                <div style="background: #d63384; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.2rem;">❓</div>
                                 <h4 style="color: #2c3e50; margin: 0; font-size: 1.1rem;">Uncertainty Quantification</h4>
                             </div>
                             <p style="color: #555; margin: 0; line-height: 1.5; font-size: 0.95rem;">Monte Carlo dropout provides confidence intervals with predictions, enabling dynamic position sizing based on model uncertainty. Higher uncertainty during conflicting SATY signals or volatile market conditions allows for more conservative risk management and adaptive trading strategies.</p>
@@ -309,17 +311,6 @@
                     </div>
                 </div>
                 
-                <div class="result-box">
-                    <h3 style="margin-bottom: 20px; font-size: 1.8rem;">
-                        <i class="fas fa-magic"></i> The Synergistic Result
-                    </h3>
-                    <p style="font-size: 1.1rem; line-height: 1.6;">
-                        When SATY indicators feed into LSTM neural networks, we create an intelligent system that combines 
-                        the interpretability of traditional technical analysis with the pattern recognition power of modern AI. 
-                        The LSTM learns not just individual indicator values, but the complex relationships and timing between 
-                        different SATY components across multiple timeframes.
-                    </p>
-                </div>
             </div>
             
             <h3 style="color: #2c3e50; margin: 40px 0 30px 0; text-align: center; font-size: 2rem;">
@@ -330,8 +321,8 @@
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; text-align: center;">
                     <div>
                         <div style="background: #3498db; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.5rem; font-weight: bold;">1</div>
-                        <h4 style="color: #2c3e50; margin-bottom: 10px;">Feature Extraction</h4>
-                        <p>SATY indicators generate 50+ technical features from raw price data: EMA ribbon values (8,13,21,48,200), VWAP relationships, ATR levels, Fibonacci retracements, regular/hidden divergence signals, and phase oscillator states. These features create a comprehensive representation of market dynamics that serves as input to the LSTM neural network.</p>
+                        <h4 style="color: #2c3e50; margin-bottom: 10px;">Enhanced Feature Extraction</h4>
+                        <p>SATY indicators generate 250+ advanced features including EMA crossovers, ATR levels, phase oscillator signals, and technical indicators. Intelligent selection reduces these to 60-75 optimal features for LSTM training.</p>
                     </div>
                     
                     <div>
@@ -350,6 +341,138 @@
                         <div style="background: #3498db; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.5rem; font-weight: bold;">4</div>
                         <h4 style="color: #2c3e50; margin-bottom: 10px;">Intelligent Predictions</h4>
                         <p>The system outputs directional predictions with confidence intervals, combining SATY insights with AI pattern recognition.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Synergistic Result: Feature Engineering Excellence -->
+        <div class="section">
+            <h2><i class="fas fa-cogs"></i> Feature Engineering Excellence</h2>
+            
+            <div style="background: linear-gradient(135deg, #495057 0%, #343a40 100%); color: white; padding: 40px; border-radius: 12px; margin: 30px 0;">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h3 style="font-size: 2rem; margin-bottom: 15px;">
+                        <i class="fas fa-magic"></i> From 250+ Raw Features to 67 Optimized Features
+                    </h3>
+                    <p style="font-size: 1.2rem; opacity: 0.95;">
+                        Intelligent feature selection transforms comprehensive SATY analysis into machine learning excellence
+                    </p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 30px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; border-left: 4px solid #fff;">
+                        <h4 style="color: #fff; margin-bottom: 15px; font-size: 1.3rem;">
+                            <i class="fas fa-chart-line"></i> Raw Feature Generation
+                        </h4>
+                        <ul style="color: rgba(255,255,255,0.9); line-height: 1.6; margin: 0; padding-left: 20px;">
+                            <li><strong>EMA Ribbon:</strong> 49 features (crossovers, distances, mean reversion)</li>
+                            <li><strong>ATR Levels:</strong> 109 features (Fibonacci levels, Golden Gate, put/call triggers)</li>
+                            <li><strong>Phase Oscillator:</strong> 67 features (divergences, bounces, crossovers)</li>
+                            <li><strong>Technical Indicators:</strong> 25+ features (RSI, Bollinger Bands, volume)</li>
+                        </ul>
+                        <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;">
+                            <strong style="font-size: 1.4rem;">250+ Total Features</strong>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; border-left: 4px solid #fff;">
+                        <h4 style="color: #fff; margin-bottom: 15px; font-size: 1.3rem;">
+                            <i class="fas fa-filter"></i> Intelligent Selection Process
+                        </h4>
+                        <div style="color: rgba(255,255,255,0.9); line-height: 1.6;">
+                            <p style="margin-bottom: 12px;"><strong>Priority-Based Filtering:</strong></p>
+                            <ol style="margin: 0; padding-left: 20px;">
+                                <li>Price & volume features (25 features)</li>
+                                <li>Technical indicators (35 features)</li>
+                                <li>Enhanced SATY features (60 features)</li>
+                                <li>Time-based features (15 features)</li>
+                            </ol>
+                            <p style="margin-top: 15px; font-style: italic;">
+                                Algorithm selects most predictive features while avoiding redundancy and noise
+                            </p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center;">
+                            <strong style="font-size: 1.4rem;">67 Optimized Features</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature Categories Breakdown -->
+            <div style="background: white; border-radius: 20px; padding: 40px; margin: 30px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-left: 6px solid #0d6efd;">
+                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 30px; font-size: 1.8rem;">
+                    <i class="fas fa-layer-group"></i> Enhanced SATY Feature Categories
+                </h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px;">
+                    <div style="background: #f8f9fa; border-radius: 12px; padding: 20px; border-left: 6px solid #198754;">
+                        <h4 style="color: #198754; margin-bottom: 10px;">🔄 Mean Reversion (25 features)</h4>
+                        <p style="color: #555; font-size: 0.9rem; line-height: 1.5;">
+                            VWAP & EMA21 distance analysis, z-scores, percentiles, oversold/overbought conditions, reversion signals
+                        </p>
+                        <div style="background: #198754; color: white; padding: 5px 10px; border-radius: 15px; display: inline-block; font-size: 0.8rem; margin-top: 8px;">
+                            <strong>Examples:</strong> vwap_distance_zscore, ema21_reversion_signal
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; border-radius: 12px; padding: 20px; border-left: 6px solid #0d6efd;">
+                        <h4 style="color: #0d6efd; margin-bottom: 10px;">🎯 ATR 100% Emphasis (22 features)</h4>
+                        <p style="color: #555; font-size: 0.9rem; line-height: 1.5;">
+                            Critical ±100% ATR levels, bounce detection, effectiveness scores, range analysis, rejection signals
+                        </p>
+                        <div style="background: #0d6efd; color: white; padding: 5px 10px; border-radius: 15px; display: inline-block; font-size: 0.8rem; margin-top: 8px;">
+                            <strong>Examples:</strong> atr_upper_100_effectiveness, atr_100_rejection
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; border-radius: 12px; padding: 20px; border-left: 6px solid #ffc107;">
+                        <h4 style="color: #ffc107; margin-bottom: 10px;">📞 Put/Call Triggers (35 features)</h4>
+                        <p style="color: #555; font-size: 0.9rem; line-height: 1.5;">
+                            Options-based support/resistance, market maker flow, dynamic trigger levels, round number psychology
+                        </p>
+                        <div style="background: #ffc107; color: white; padding: 5px 10px; border-radius: 15px; display: inline-block; font-size: 0.8rem; margin-top: 8px;">
+                            <strong>Examples:</strong> put_trigger_support_signal, options_flow_pressure
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; border-radius: 12px; padding: 20px; border-left: 6px solid #20c997;">
+                        <h4 style="color: #20c997; margin-bottom: 10px;">🌊 Bounce/Crossover (30 features)</h4>
+                        <p style="color: #555; font-size: 0.9rem; line-height: 1.5;">
+                            Phase oscillator bounces at ±100/±61.8, crossover confirmations, momentum analysis, reversal timing
+                        </p>
+                        <div style="background: #20c997; color: white; padding: 5px 10px; border-radius: 15px; display: inline-block; font-size: 0.8rem; margin-top: 8px;">
+                            <strong>Examples:</strong> crossover_minus100_to_minus90, bounced_off_extreme_support
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Why Feature Reduction Works -->
+                <div style="background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%); border: 2px solid #27ae60; border-radius: 15px; padding: 30px; margin-top: 30px;">
+                    <h4 style="color: #27ae60; margin-bottom: 15px; text-align: center; font-size: 1.4rem;">
+                        <i class="fas fa-lightbulb"></i> Why Feature Reduction Enhances Performance
+                    </h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; text-align: center;">
+                        <div>
+                            <div style="background: #27ae60; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: bold;">1</div>
+                            <h5 style="color: #27ae60; margin-bottom: 8px;">Noise Reduction</h5>
+                            <p style="color: #555; font-size: 0.85rem;">Eliminates redundant and weakly predictive features</p>
+                        </div>
+                        <div>
+                            <div style="background: #27ae60; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: bold;">2</div>
+                            <h5 style="color: #27ae60; margin-bottom: 8px;">Overfitting Prevention</h5>
+                            <p style="color: #555; font-size: 0.85rem;">Prevents model from memorizing training data</p>
+                        </div>
+                        <div>
+                            <div style="background: #27ae60; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: bold;">3</div>
+                            <h5 style="color: #27ae60; margin-bottom: 8px;">Computational Efficiency</h5>
+                            <p style="color: #555; font-size: 0.85rem;">Faster training and prediction times</p>
+                        </div>
+                        <div>
+                            <div style="background: #27ae60; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: bold;">4</div>
+                            <h5 style="color: #27ae60; margin-bottom: 8px;">Signal Clarity</h5>
+                            <p style="color: #555; font-size: 0.85rem;">Focuses on strongest predictive relationships</p>
+                        </div>
                     </div>
                 </div>
             </div>
