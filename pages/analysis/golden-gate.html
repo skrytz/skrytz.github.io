@@ -280,15 +280,15 @@
         
         <div class="stats-overview">
             <div class="stat-card">
-                <div class="stat-number">210,345</div>
+                <div class="stat-number">210,233</div>
                 <div class="stat-label">10-Minute Bars Analyzed</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">5,353</div>
+                <div class="stat-number">5,365</div>
                 <div class="stat-label">Trading Days</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">5,249</div>
+                <div class="stat-number">5,301</div>
                 <div class="stat-label">Total Events Found</div>
             </div>
             <div class="stat-card">
@@ -336,11 +336,11 @@
                         
                         <div class="success-rates">
                             <div class="success-card">
-                                <div class="success-rate">4,414</div>
+                                <div class="success-rate">4,406</div>
                                 <div>Total Events</div>
                             </div>
                             <div class="success-card">
-                                <div class="success-rate">60.0%</div>
+                                <div class="success-rate">59.8%</div>
                                 <div>Average Success Rate</div>
                             </div>
                         </div>
@@ -387,11 +387,11 @@ elif open_price < levels['trigger_lower']:
                         
                         <div class="success-rates">
                             <div class="success-card">
-                                <div class="success-rate">538</div>
+                                <div class="success-rate">548</div>
                                 <div>Total Events</div>
                             </div>
                             <div class="success-card">
-                                <div class="success-rate">89.3%</div>
+                                <div class="success-rate">89.2%</div>
                                 <div>Average Success Rate</div>
                             </div>
                         </div>
@@ -443,7 +443,7 @@ elif open_price < levels['trigger_lower']:
                                 <div>Total Events</div>
                             </div>
                             <div class="success-card">
-                                <div class="success-rate">69.0%</div>
+                                <div class="success-rate">65.3%</div>
                                 <div>Success Rate</div>
                             </div>
                         </div>
@@ -464,16 +464,16 @@ elif open_price < levels['trigger_lower']:
 <div class="key-insights">
             <h3>🔍 Key Insights</h3>
             <div class="insight-item">
-                <strong>Highest Success Rate:</strong> Gap-up scenarios achieve 89.3% success rate, while Double Completions show 69.0% success rate - both significantly higher than intraday triggers (60.0%).
+                <strong>Highest Success Rate:</strong> Gap-up scenarios achieve 89.2% success rate, while Double Completions show 65.3% success rate - both significantly higher than intraday triggers (59.8%).
             </div>
             <div class="insight-item">
-                <strong>Corrected Analysis Impact:</strong> Fixing the market open time bug revealed more realistic scenario counts and improved success rates across all categories.
+                <strong>Data Correction Impact:</strong> Updating 10-minute closing prices with daily settlement data corrected 5,352 price discrepancies, improving analysis accuracy and reducing false signals.
             </div>
             <div class="insight-item">
                 <strong>State Management Impact:</strong> Proper OPEN/CLOSED state management with maximum 2 states per day prevents over-trading and improves signal quality.
             </div>
             <div class="insight-item">
-                <strong>Market Behavior:</strong> 39.1% of Golden Gate completions at open lead to double completion opportunities, with 69.0% success when properly detected.
+                <strong>Market Behavior:</strong> 39.4% of Golden Gate completions at open lead to double completion opportunities, with 65.3% success when properly detected.
             </div>
             <div class="insight-item">
                 <strong>ATR Levels:</strong> The 38.2% trigger and 61.8% target levels based on previous day's ATR provide effective support/resistance zones.
@@ -485,7 +485,7 @@ elif open_price < levels['trigger_lower']:
         
         <div class="footer">
             <p>Golden Gate Analysis • State-Managed Trading System • SPX 10-Minute Data Analysis</p>
-            <p>Data Period: 2004-2025 • Total Bars: 210,345 • Analysis Date: June 2025</p>
+            <p>Data Period: 2004-2025 • Total Bars: 210,233 • Corrected Settlement Prices • Analysis Date: June 2025</p>
         </div>
     </div>
 
@@ -499,9 +499,9 @@ elif open_price < levels['trigger_lower']:
         new Chart(intradayCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Positive Triggers (58.8%)', 'Negative Triggers (61.2%)', 'Failed Triggers'],
+                labels: ['Positive Triggers (58.9%)', 'Negative Triggers (60.8%)', 'Failed Triggers'],
                 datasets: [{
-                    data: [1346, 1301, 1766],
+                    data: [1341, 1294, 1771],
                     backgroundColor: ['#ff6b6b', '#ee5a24', '#ddd'],
                     borderWidth: 2,
                     borderColor: '#fff'
@@ -538,13 +538,13 @@ elif open_price < levels['trigger_lower']:
                 labels: ['Positive Gaps', 'Negative Gaps'],
                 datasets: [{
                     label: 'Completed',
-                    data: [268, 213],
+                    data: [273, 216],
                     backgroundColor: '#4ecdc4',
                     borderColor: '#44a08d',
                     borderWidth: 2
                 }, {
                     label: 'Failed',
-                    data: [30, 27],
+                    data: [31, 28],
                     backgroundColor: '#ddd',
                     borderColor: '#bbb',
                     borderWidth: 2
@@ -583,9 +583,9 @@ elif open_price < levels['trigger_lower']:
         new Chart(doubleCtx, {
             type: 'pie',
             data: {
-                labels: ['Positive Double (73.2%)', 'Negative Double (66.7%)', 'Failed'],
+                labels: ['Positive Double (64.1%)', 'Negative Double (66.1%)', 'Failed'],
                 datasets: [{
-                    data: [30, 38, 30],
+                    data: [25, 39, 34],
                     backgroundColor: ['#a8e6cf', '#7fcdcd', '#ddd'],
                     borderWidth: 2,
                     borderColor: '#fff'
@@ -622,7 +622,7 @@ elif open_price < levels['trigger_lower']:
                 labels: ['Intraday Analysis', 'Gap-Up Analysis', 'Double Completion'],
                 datasets: [{
                     label: 'Success Rate (%)',
-                    data: [60.0, 89.4, 69.4],
+                    data: [59.8, 89.2, 65.3],
                     backgroundColor: [
                         'rgba(255, 107, 107, 0.8)',
                         'rgba(78, 205, 196, 0.8)',
@@ -636,7 +636,7 @@ elif open_price < levels['trigger_lower']:
                     borderWidth: 2
                 }, {
                     label: 'Total Events',
-                    data: [4413, 538, 98],
+                    data: [4406, 548, 98],
                     type: 'line',
                     yAxisID: 'y1',
                     borderColor: '#667eea',
@@ -661,7 +661,7 @@ elif open_price < levels['trigger_lower']:
                         callbacks: {
                             afterLabel: function(context) {
                                 if (context.datasetIndex === 0) {
-                                    const events = [4413, 538, 98][context.dataIndex];
+                                    const events = [4406, 548, 98][context.dataIndex];
                                     return `Total Events: ${events}`;
                                 }
                                 return '';

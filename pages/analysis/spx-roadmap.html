@@ -1,0 +1,2312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPX Level Progression Roadmap - Time-Based ATR Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="../../assets/js/components/navigation.js"></script>
+    <script src="../../assets/data/spx_roadmap_data.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 20px 60px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 80px;
+            padding: 60px 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 6px solid #e74c3c;
+            position: relative;
+        }
+
+        /* Navigation styles are now handled by js/navigation.js */
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-family: 'Georgia', serif;
+        }
+
+        .header .subtitle {
+            font-size: 1.3rem;
+            color: #7f8c8d;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        .header .period {
+            font-size: 1rem;
+            color: #95a5a6;
+            font-weight: 500;
+        }
+
+        .controls-section {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #e74c3c;
+            margin-bottom: 40px;
+        }
+
+        .controls-section h3 {
+            font-size: 1.4rem;
+            color: #e74c3c;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            align-items: end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+
+        select, input {
+            padding: 12px 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Georgia', serif;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #e74c3c;
+        }
+
+        .analysis-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .analysis-header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .analysis-header h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-family: 'Georgia', serif;
+        }
+
+        .analysis-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .analysis-content {
+            padding: 40px 30px;
+        }
+
+        .level-progression {
+            margin-bottom: 50px;
+        }
+
+        .level-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            font-family: 'Georgia', serif;
+        }
+
+        .call-level {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .put-level {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .progression-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .time-bucket {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px solid #ecf0f1;
+            transition: transform 0.3s ease;
+        }
+
+        .time-bucket:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .time-bucket h4 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            font-family: 'Georgia', serif;
+        }
+
+        .progression-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .level-label {
+            min-width: 90px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .probability-bar {
+            flex: 1;
+            height: 24px;
+            background: #ecf0f1;
+            border-radius: 12px;
+            margin: 0 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .probability-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.6s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .call-fill {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+        }
+
+        .put-fill {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+        }
+
+        .probability-text {
+            min-width: 65px;
+            text-align: right;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .stats-summary {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .stats-summary h3 {
+            font-size: 1.4rem;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-family: 'Georgia', serif;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #e74c3c;
+            font-family: 'Georgia', serif;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #95a5a6;
+            font-style: italic;
+        }
+
+        .methodology-section {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #e74c3c;
+            margin-top: 40px;
+        }
+
+        .methodology-section h3 {
+            font-size: 1.4rem;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-family: 'Georgia', serif;
+        }
+
+        .methodology-section p {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px 10px 40px 10px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .progression-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .level-title {
+                font-size: 1.4rem;
+            }
+
+            /* Mobile responsive for examples grid */
+            .methodology-section div[style*="grid-template-columns: 1fr 1fr"] {
+                display: block !important;
+            }
+
+            .methodology-section div[style*="grid-template-columns: 1fr 1fr"] > div {
+                margin-bottom: 20px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SPX Level Progression Roadmap</h1>
+            <div class="subtitle">Interactive Time-Based ATR Level Analysis</div>
+            <div class="period">21+ Years of SPX Data | All ATR Levels up to ±150% | Level-to-Level Progression Probabilities</div>
+        </div>
+
+        <div class="controls-section">
+            <h3><i class="fas fa-link"></i> ATR Progression Chain Builder</h3>
+            <p style="margin-bottom: 25px; color: #7f8c8d; font-style: italic;">
+                Build a chain of ATR levels to analyze progression probabilities. Single levels show standard progression analysis.
+                Add 2+ levels to see conditional chain probabilities throughout the trading day.
+            </p>
+            
+            <!-- ATR Level Chain Builder - Now Primary -->
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #28a745;">
+                <h4 style="color: #28a745; margin-bottom: 15px; font-size: 1rem;">
+                    <i class="fas fa-plus-circle"></i> Build Your ATR Chain
+                </h4>
+                <div id="levelChain" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; min-height: 50px; align-items: center;">
+                    <div style="color: #6c757d; font-style: italic;">Click "Add Level" to start building your progression chain...</div>
+                </div>
+                
+                <!-- Chain Building Controls with Integrated Analysis Settings -->
+                <div style="display: flex; gap: 10px; align-items: end; flex-wrap: wrap; margin-bottom: 20px;">
+                    <!-- Chain Controls -->
+                    <select id="nextLevelSelect" style="padding: 8px 12px; border: 2px solid #28a745; border-radius: 6px; background: white; min-width: 180px; font-size: 0.9rem;">
+                        <option value="">Loading available levels...</option>
+                    </select>
+                    <button id="addLevel" style="padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
+                        <i class="fas fa-plus"></i> Add Level
+                    </button>
+                    <button id="resetChain" style="padding: 8px 15px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">
+                        <i class="fas fa-undo"></i> Reset Chain
+                    </button>
+                    
+                    <!-- Divider -->
+                    <div style="width: 1px; height: 30px; background: #dee2e6; margin: 0 5px;"></div>
+                    
+                    <!-- Analysis Settings -->
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <label for="timePeriod" style="font-size: 0.75rem; color: #6c757d; font-weight: 600;">📅 When Level Hit</label>
+                        <select id="timePeriod" style="padding: 6px 8px; border: 1px solid #ced4da; border-radius: 4px; background: white; min-width: 110px; font-size: 0.8rem;">
+                            <option value="">Loading periods...</option>
+                        </select>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <label for="timeWindow" style="font-size: 0.75rem; color: #6c757d; font-weight: 600;">⏱️ Look Forward</label>
+                        <select id="timeWindow" style="padding: 6px 8px; border: 1px solid #ced4da; border-radius: 4px; background: white; min-width: 80px; font-size: 0.8rem;">
+                            <option value="15">15 min</option>
+                            <option value="30">30 min</option>
+                            <option value="45">45 min</option>
+                            <option value="60">1 hour</option>
+                            <option value="90">1h 30m</option>
+                            <option value="120">2 hours</option>
+                            <option value="150">2h 30m</option>
+                            <option value="180">3 hours</option>
+                            <option value="240">4 hours</option>
+                            <option value="300">5 hours</option>
+                            <option value="360">6 hours</option>
+                            <option value="eod" selected>End of Day</option>
+                        </select>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <label for="minOccurrences" style="font-size: 0.75rem; color: #6c757d; font-weight: 600;">Min Occur</label>
+                        <input type="number" id="minOccurrences" value="10" min="1" max="100" style="padding: 6px 8px; border: 1px solid #ced4da; border-radius: 4px; background: white; width: 65px; font-size: 0.8rem;">
+                    </div>
+                </div>
+                
+                <!-- Clear Explanation -->
+                <div style="background: #e8f4fd; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #2196f3;">
+                    <div style="font-size: 0.85rem; color: #1565c0;">
+                        <i class="fas fa-info-circle"></i> <strong>How it works:</strong>
+                        Select <strong>when</strong> level is hit + <strong>time window</strong> to look forward.
+                        <br>
+                        <strong>Example:</strong> "First Hour" + "2 hours" = If +23.6% hit at 10:15 AM → look until 12:15 PM
+                        <br>
+                        <strong>Single Level:</strong> Progression probabilities from that level <em>(+23.6% → +38.2%: 65%)</em>
+                        <br>
+                        <strong>Chain:</strong> Conditional probability of completing entire sequence <em>(+23.6% → +38.2% → +50%: 28%)</em>
+                    </div>
+                </div>
+                
+                <!-- Inline Chain Analysis Results -->
+                <div id="inlineChainAnalysis" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+                    <!-- Dynamic chain analysis results will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Information Sections -->
+            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
+                <h4 style="color: #856404; margin-bottom: 10px; font-size: 0.9rem;">
+                    <i class="fas fa-exclamation-triangle"></i> About Caveat Scenarios
+                </h4>
+                <p style="font-size: 0.85rem; color: #856404; margin: 0; line-height: 1.5;">
+                    <strong>Caveat scenarios</strong> occur when the opposite trigger level is hit first before your selected level.
+                    For example, if analyzing a call trigger (+23.6%) but the put trigger (-23.6%) was hit earlier in the day,
+                    this creates a "potential reversal scenario" that may be less reliable.
+                </p>
+            </div>
+            
+        </div>
+
+
+        <!-- Analysis Results Container -->
+        <div id="loadingMessage" class="loading" style="display: none;">
+            <i class="fas fa-spinner fa-spin"></i> Loading analysis...
+        </div>
+        
+        <div id="noDataMessage" class="no-data" style="display: none;">
+            <i class="fas fa-info-circle"></i>
+            <p>Please add at least one ATR level to the chain to see progression analysis.</p>
+        </div>
+        
+        <div id="roadmapData" style="display: none;">
+            <!-- Dynamic roadmap analysis will be inserted here -->
+        </div>
+
+        <div class="methodology-section">
+            <h3><i class="fas fa-info-circle"></i> Analysis Methodology</h3>
+            <p><strong>Starting Point Analysis:</strong> Select any ATR level up to ±150% as the starting point (23.6% trigger, 38.2%, 50%, 61.8%, 78.6%, 100%, 123.6%, 138.2%, 150%) and see the probability of reaching subsequent levels.</p>
+            <p><strong>Time Buckets:</strong> Analysis is grouped into 30-minute time periods throughout the trading day (9:30 AM - 4:00 PM ET) to show how progression probabilities vary by time of day.</p>
+            <p><strong>Direction Filtering:</strong> Progressive analysis maintains directional consistency - call levels progress to higher call levels, put levels progress to deeper put levels.</p>
+            <p><strong>Caveat Scenarios:</strong> When opposite direction triggers are hit first, scenarios are flagged as "potential reversal" but still included for comprehensive analysis.</p>
+            <p><strong>Data Source:</strong> Based on 21+ years of SPX 10-minute data with exact Pine Script ATR methodology, first-time level hit filtering, and comprehensive scenario analysis.</p>
+        </div>
+
+
+
+    </div>
+
+    <script>
+        // Global variables for roadmap data
+        let roadmapData = {};
+        let roadmapMetadata = {};
+        let dataLoaded = false;
+        let levelChain = [];
+
+        // Load real roadmap data from global variable
+        function loadRoadmapData() {
+            try {
+                if (window.SPX_ROADMAP_DATA) {
+                    roadmapData = window.SPX_ROADMAP_DATA.roadmap_data;
+                    roadmapMetadata = window.SPX_ROADMAP_DATA.metadata;
+                    dataLoaded = true;
+                    
+                    console.log('Loaded roadmap data:', {
+                        triggerLevels: Object.keys(roadmapData),
+                        totalScenarios: roadmapMetadata.total_scenarios,
+                        timePeriods: roadmapMetadata.time_periods.length,
+                        caveatPercentage: roadmapMetadata.overall_caveat_percentage
+                    });
+                    
+                    // Update the page header with real data info
+                    updatePageHeader();
+                    
+                    return true;
+                } else {
+                    throw new Error('SPX_ROADMAP_DATA not found');
+                }
+            } catch (error) {
+                console.error('Error loading roadmap data:', error);
+                showDataLoadError();
+                return false;
+            }
+        }
+
+        function updatePageHeader() {
+            if (!dataLoaded) return;
+            
+            const subtitle = document.querySelector('.header .period');
+            if (subtitle) {
+                subtitle.textContent = `${roadmapMetadata.total_scenarios.toLocaleString()} scenarios | ${roadmapMetadata.time_periods.length} time periods | ${roadmapMetadata.overall_caveat_percentage}% caveat scenarios`;
+            }
+            
+            // Populate time periods dropdown
+            populateTimePeriods();
+        }
+
+        function populateTimePeriods() {
+            if (!dataLoaded) return;
+            
+            const timePeriodSelect = document.getElementById('timePeriod');
+            timePeriodSelect.innerHTML = '<option value="">Select time period...</option>';
+            
+            // Add special "First Hour" option
+            const firstHourOption = document.createElement('option');
+            firstHourOption.value = 'first_1h';
+            firstHourOption.textContent = '📈 First Hour (9:30-10:30)';
+            timePeriodSelect.appendChild(firstHourOption);
+            
+            // Add separator
+            const separatorOption = document.createElement('option');
+            separatorOption.disabled = true;
+            separatorOption.textContent = '────────────────────';
+            timePeriodSelect.appendChild(separatorOption);
+            
+            // Create 30-minute buckets from 9:30 AM to 4:00 PM
+            const thirtyMinBuckets = [
+                '09:30-10:00',
+                '10:00-10:30',
+                '10:30-11:00',
+                '11:00-11:30',
+                '11:30-12:00',
+                '12:00-12:30',
+                '12:30-13:00',
+                '13:00-13:30',
+                '13:30-14:00',
+                '14:00-14:30',
+                '14:30-15:00',
+                '15:00-15:30',
+                '15:30-16:00'
+            ];
+            
+            thirtyMinBuckets.forEach(bucket => {
+                const option = document.createElement('option');
+                option.value = bucket;
+                option.textContent = bucket;
+                timePeriodSelect.appendChild(option);
+            });
+            
+            // Select first hour by default
+            timePeriodSelect.value = 'first_1h';
+        }
+
+        function addLevelToChain() {
+            const nextLevelSelect = document.getElementById('nextLevelSelect');
+            const selectedLevel = nextLevelSelect.value;
+            
+            if (!selectedLevel) {
+                alert('Please select an ATR level to add to the chain.');
+                return;
+            }
+            
+            // Check if level already exists in chain
+            if (levelChain.includes(selectedLevel)) {
+                alert('This level is already in the chain.');
+                return;
+            }
+            
+            // Check direction consistency
+            if (levelChain.length > 0) {
+                const isChainCall = levelChain[0].startsWith('call_');
+                const isSelectedCall = selectedLevel.startsWith('call_');
+                
+                if (isChainCall !== isSelectedCall) {
+                    alert('All levels in the chain must be in the same direction (all call or all put).');
+                    return;
+                }
+            }
+            
+            levelChain.push(selectedLevel);
+            updateChainDisplay();
+            nextLevelSelect.value = '';
+            updateRoadmap();
+        }
+
+        function removeFromChain(index) {
+            levelChain.splice(index, 1);
+            updateChainDisplay();
+            updateRoadmap();
+        }
+
+        function resetChain() {
+            levelChain = [];
+            updateChainDisplay();
+            updateRoadmap();
+        }
+
+        function updateChainDisplay() {
+            const chainContainer = document.getElementById('levelChain');
+            const inlineAnalysis = document.getElementById('inlineChainAnalysis');
+            
+            if (levelChain.length === 0) {
+                chainContainer.innerHTML = '<div style="color: #6c757d; font-style: italic;">Click "Add Level" to start building your progression chain...</div>';
+                inlineAnalysis.style.display = 'none';
+                updateDropdownOptions();
+                return;
+            }
+            
+            let chainHTML = '';
+            levelChain.forEach((level, index) => {
+                const levelDisplay = formatLevelName(level);
+                const isLast = index === levelChain.length - 1;
+                
+                chainHTML += `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="background: ${level.startsWith('call_') ? '#28a745' : '#dc3545'}; color: white; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                            ${levelDisplay}
+                            <button onclick="removeFromChain(${index})" style="background: none; border: none; color: white; cursor: pointer; padding: 2px;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        ${!isLast ? '<i class="fas fa-arrow-right" style="color: #6c757d;"></i>' : ''}
+                    </div>
+                `;
+            });
+            
+            chainContainer.innerHTML = chainHTML;
+            updateDropdownOptions();
+        }
+
+        function updateDropdownOptions() {
+            const dropdown = document.getElementById('nextLevelSelect');
+            
+            // Get available levels from actual data
+            let availableLevelsFromData = [];
+            if (dataLoaded && roadmapData) {
+                availableLevelsFromData = Object.keys(roadmapData);
+            }
+            
+            // Define all possible levels with recommendations and progression order (up to ±150%)
+            // Only include levels that actually exist in the data
+            const allPossibleLevels = [
+                { value: 'call_trigger', label: '+23.6% ATR (Call Trigger)', type: 'call', recommended: true, order: 1 },
+                { value: 'put_trigger', label: '-23.6% ATR (Put Trigger)', type: 'put', recommended: true, order: 1 },
+                { value: 'call_0382', label: '+38.2% ATR', type: 'call', recommended: false, order: 2 },
+                { value: 'put_0382', label: '-38.2% ATR', type: 'put', recommended: false, order: 2 },
+                { value: 'call_0500', label: '+50% ATR', type: 'call', recommended: false, order: 3 },
+                { value: 'put_0500', label: '-50% ATR', type: 'put', recommended: false, order: 3 },
+                { value: 'call_0618', label: '+61.8% ATR', type: 'call', recommended: false, order: 4 },
+                { value: 'put_0618', label: '-61.8% ATR', type: 'put', recommended: false, order: 4 },
+                { value: 'call_0786', label: '+78.6% ATR', type: 'call', recommended: false, order: 5 },
+                { value: 'put_0786', label: '-78.6% ATR', type: 'put', recommended: false, order: 5 },
+                { value: 'call_1000', label: '+100% ATR', type: 'call', recommended: false, order: 6 },
+                { value: 'put_1000', label: '-100% ATR', type: 'put', recommended: false, order: 6 },
+                { value: 'call_1236', label: '+123.6% ATR', type: 'call', recommended: false, order: 7 },
+                { value: 'put_1236', label: '-123.6% ATR', type: 'put', recommended: false, order: 7 },
+                { value: 'call_1382', label: '+138.2% ATR', type: 'call', recommended: false, order: 8 },
+                { value: 'put_1382', label: '-138.2% ATR', type: 'put', recommended: false, order: 8 },
+                { value: 'call_1500', label: '+150% ATR', type: 'call', recommended: false, order: 9 },
+                { value: 'put_1500', label: '-150% ATR', type: 'put', recommended: false, order: 9 }
+            ];
+            
+            // Filter to only include levels that exist in the data
+            const allLevels = allPossibleLevels.filter(level =>
+                availableLevelsFromData.includes(level.value)
+            );
+            
+            let availableLevels = [];
+            
+            if (levelChain.length === 0) {
+                // If chain is empty, show all levels but organize with recommendations
+                availableLevels = allLevels;
+            } else {
+                // Determine chain direction from first level
+                const chainDirection = levelChain[0].startsWith('call_') ? 'call' : 'put';
+                
+                // Find the highest order level in the current chain
+                const chainLevels = levelChain.map(level => allLevels.find(l => l.value === level)).filter(Boolean);
+                const maxOrder = Math.max(...chainLevels.map(level => level.order));
+                
+                // Filter levels to same direction, exclude already added levels, and only show progressive levels
+                availableLevels = allLevels.filter(level =>
+                    level.type === chainDirection &&
+                    !levelChain.includes(level.value) &&
+                    level.order > maxOrder  // Only allow progression to higher levels
+                );
+            }
+            
+            // Clear existing options
+            dropdown.innerHTML = '';
+            
+            // Add default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            
+            if (levelChain.length === 0) {
+                if (allLevels.length === 0) {
+                    defaultOption.textContent = 'No ATR levels available in current dataset';
+                } else {
+                    defaultOption.textContent = 'Select starting ATR level...';
+                }
+            } else {
+                const direction = levelChain[0].startsWith('call_') ? 'upward' : 'downward';
+                defaultOption.textContent = availableLevels.length > 0 ?
+                    `Select next ${direction} level...` :
+                    `No higher ${direction} levels available`;
+            }
+            dropdown.appendChild(defaultOption);
+            
+            // Only add options if we have available levels
+            if (allLevels.length === 0) {
+                // Add a disabled option explaining the limitation
+                const noDataOption = document.createElement('option');
+                noDataOption.value = '';
+                noDataOption.textContent = 'Only trigger levels (±23.6%) available in current dataset';
+                noDataOption.disabled = true;
+                dropdown.appendChild(noDataOption);
+                return;
+            }
+            
+            // For empty chain, add recommended options first
+            if (levelChain.length === 0) {
+                const recommendedLevels = availableLevels.filter(level => level.recommended);
+                const otherLevels = availableLevels.filter(level => !level.recommended);
+                
+                if (recommendedLevels.length > 0) {
+                    // Add recommended section
+                    const recommendedGroup = document.createElement('optgroup');
+                    recommendedGroup.label = '🌟 Available Starting Points';
+                    
+                    recommendedLevels.forEach(level => {
+                        const option = document.createElement('option');
+                        option.value = level.value;
+                        option.textContent = level.label;
+                        recommendedGroup.appendChild(option);
+                    });
+                    dropdown.appendChild(recommendedGroup);
+                }
+                
+                if (otherLevels.length > 0) {
+                    // Add all other options
+                    const otherGroup = document.createElement('optgroup');
+                    otherGroup.label = '📊 Other ATR Levels';
+                    
+                    otherLevels.forEach(level => {
+                        const option = document.createElement('option');
+                        option.value = level.value;
+                        option.textContent = level.label;
+                        otherGroup.appendChild(option);
+                    });
+                    dropdown.appendChild(otherGroup);
+                }
+            } else {
+                // For chain continuation, just add available progressive levels
+                availableLevels.forEach(level => {
+                    const option = document.createElement('option');
+                    option.value = level.value;
+                    option.textContent = level.label;
+                    dropdown.appendChild(option);
+                });
+            }
+        }
+
+        function showDataLoadError() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            const noDataMessage = document.getElementById('noDataMessage');
+            
+            if (loadingMessage) loadingMessage.style.display = 'none';
+            if (noDataMessage) {
+                noDataMessage.style.display = 'block';
+                noDataMessage.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Error loading roadmap data. Please ensure the data file is available.</p>
+                    <p style="font-size: 0.9rem; color: #7f8c8d;">Expected: ../../assets/data/spx_roadmap_data.json</p>
+                `;
+            }
+        }
+
+        // Fallback data removed - now using real data from spx_roadmap_data.js
+        const fallbackRoadmapData = {};
+
+        // ATR level definitions (up to ±150%)
+        const atrLevels = {
+            "trigger": { name: "Trigger", percentage: 23.6 },
+            "0382": { name: "38.2%", percentage: 38.2 },
+            "0500": { name: "50%", percentage: 50.0 },
+            "0618": { name: "61.8%", percentage: 61.8 },
+            "0786": { name: "78.6%", percentage: 78.6 },
+            "1000": { name: "100%", percentage: 100.0 },
+            "1236": { name: "123.6%", percentage: 123.6 },
+            "1382": { name: "138.2%", percentage: 138.2 },
+            "1500": { name: "150%", percentage: 150.0 }
+        };
+
+        function formatLevelName(levelKey) {
+            if (levelKey.startsWith('call_')) {
+                const level = levelKey.replace('call_', '');
+                return `↑ ${atrLevels[level]?.name || level}`;
+            } else if (levelKey.startsWith('put_')) {
+                const level = levelKey.replace('put_', '');
+                return `↓ ${atrLevels[level]?.name || level}`;
+            }
+            return levelKey;
+        }
+
+        function formatTimePeriod(timePeriod) {
+            if (timePeriod === 'first_1h') {
+                return 'First Hour (9:30-10:30)';
+            }
+            return timePeriod;
+        }
+
+        function updateRoadmap() {
+            const timePeriod = document.getElementById('timePeriod').value;
+            const timeWindow = document.getElementById('timeWindow').value;
+            const minOccurrences = parseInt(document.getElementById('minOccurrences').value);
+            
+            if (!timePeriod) {
+                document.getElementById('inlineChainAnalysis').style.display = 'none';
+                return;
+            }
+            
+            if (levelChain.length === 0) {
+                document.getElementById('inlineChainAnalysis').style.display = 'none';
+                return;
+            }
+            
+            // Note: Title updates removed since we removed the header section
+            
+            if (levelChain.length === 1) {
+                // Single level: Show inline single-level analysis
+                document.getElementById('inlineChainAnalysis').style.display = 'block';
+                document.getElementById('inlineChainAnalysis').innerHTML = '<div style="text-align: center; padding: 20px; color: #6c757d;"><i class="fas fa-spinner fa-spin"></i> Analyzing level...</div>';
+                
+                setTimeout(() => {
+                    generateInlineSingleLevelAnalysis(levelChain[0], timePeriod, timeWindow, minOccurrences);
+                }, 500);
+            } else if (levelChain.length >= 2) {
+                // 2+ levels: Show chain analysis inline in the chain builder
+                document.getElementById('inlineChainAnalysis').style.display = 'block';
+                document.getElementById('inlineChainAnalysis').innerHTML = '<div style="text-align: center; padding: 20px; color: #6c757d;"><i class="fas fa-spinner fa-spin"></i> Analyzing chain...</div>';
+                
+                setTimeout(() => {
+                    if (levelChain.length === 2) {
+                        generateInlineTwoLevelChainAnalysis(levelChain, timePeriod, timeWindow, minOccurrences);
+                    } else {
+                        generateInlineProgressiveChainAnalysis(levelChain, timePeriod, timeWindow, minOccurrences);
+                    }
+                }, 500);
+            }
+        }
+
+        function generateSpecificPeriodAnalysis(startingLevel, timePeriod, timeWindow, minOccurrences) {
+            const roadmapContainer = document.getElementById('roadmapData');
+            roadmapContainer.innerHTML = '';
+            
+            // Get data for the starting level
+            const levelData = roadmapData[startingLevel];
+            
+            if (!levelData || !levelData['10min']) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('noDataMessage').style.display = 'block';
+                document.getElementById('noDataMessage').innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>No data available for ${formatLevelName(startingLevel)}.</p>
+                    <p style="font-size: 0.9rem; color: #7f8c8d;">Try selecting a different ATR level.</p>
+                `;
+                return;
+            }
+            
+            // Aggregate data from 10-minute periods within the 30-minute bucket
+            const aggregatedData = aggregateThirtyMinuteBucket(levelData['10min'], timePeriod);
+            
+            if (!aggregatedData || aggregatedData.total_occurrences === 0) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('noDataMessage').style.display = 'block';
+                document.getElementById('noDataMessage').innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>No data available for ${formatLevelName(startingLevel)} in ${timePeriod}.</p>
+                    <p style="font-size: 0.9rem; color: #7f8c8d;">Try selecting a different time period or ATR level.</p>
+                `;
+                return;
+            }
+            
+            // Check minimum occurrences
+            if (aggregatedData.total_occurrences < minOccurrences) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('noDataMessage').style.display = 'block';
+                document.getElementById('noDataMessage').innerHTML = `
+                    <i class="fas fa-info-circle"></i>
+                    <p>Insufficient data: only ${aggregatedData.total_occurrences} occurrences (minimum: ${minOccurrences}).</p>
+                    <p style="font-size: 0.9rem; color: #7f8c8d;">Try lowering the minimum occurrences or selecting a different time period.</p>
+                `;
+                return;
+            }
+            
+            // Create the analysis display
+            const analysisSection = createSpecificPeriodSection(startingLevel, timePeriod, aggregatedData, timeWindow);
+            roadmapContainer.appendChild(analysisSection);
+            
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('roadmapData').style.display = 'block';
+        }
+
+        function generateTwoLevelChainAnalysis(chain, timePeriod, timeWindow, minOccurrences) {
+            const roadmapContainer = document.getElementById('roadmapData');
+            roadmapContainer.innerHTML = '';
+            
+            const startingLevel = chain[0];
+            const targetLevel = chain[1];
+            
+            // Get data for the starting level
+            const levelData = roadmapData[startingLevel];
+            
+            if (!levelData || !levelData['10min']) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('noDataMessage').style.display = 'block';
+                document.getElementById('noDataMessage').innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>No data available for ${formatLevelName(startingLevel)}.</p>
+                    <p style="font-size: 0.9rem; color: #7f8c8d;">Try selecting a different ATR level.</p>
+                `;
+                return;
+            }
+            
+            // Aggregate data from 10-minute periods within the 30-minute bucket
+            const aggregatedData = aggregateThirtyMinuteBucket(levelData['10min'], timePeriod);
+            
+            if (!aggregatedData || aggregatedData.total_occurrences === 0) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('noDataMessage').style.display = 'block';
+                document.getElementById('noDataMessage').innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>No data available for ${formatLevelName(startingLevel)} in ${timePeriod}.</p>
+                    <p style="font-size: 0.9rem; color: #7f8c8d;">Try selecting a different time period or ATR level.</p>
+                `;
+                return;
+            }
+            
+            // Check minimum occurrences first
+            if (aggregatedData.total_occurrences < minOccurrences) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('noDataMessage').style.display = 'block';
+                document.getElementById('noDataMessage').innerHTML = `
+                    <i class="fas fa-info-circle"></i>
+                    <p>Insufficient data: only ${Math.round(aggregatedData.total_occurrences)} occurrences (minimum: ${minOccurrences}).</p>
+                    <p style="font-size: 0.9rem; color: #7f8c8d;">Try lowering the minimum occurrences or selecting a different time period.</p>
+                `;
+                return;
+            }
+            
+            // Check if the target level exists in the data
+            let progressionProbability = 0;
+            let isEstimated = false;
+            
+            if (aggregatedData[targetLevel] && aggregatedData[targetLevel] > 0) {
+                progressionProbability = aggregatedData[targetLevel];
+            } else {
+                // Simple estimation - use 10% as fallback for missing progressions
+                progressionProbability = 10.0;
+                isEstimated = true;
+            }
+            
+            // Create simple two-level chain analysis
+            const analysisSection = createSimpleTwoLevelChainSection(chain, timePeriod, aggregatedData, progressionProbability, isEstimated, timeWindow);
+            roadmapContainer.appendChild(analysisSection);
+            
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('roadmapData').style.display = 'block';
+        }
+
+        function createTwoLevelChainSection(chain, timePeriod, aggregatedData, timeWindow) {
+            const section = document.createElement('div');
+            section.className = 'level-progression';
+            
+            const startingLevel = chain[0];
+            const targetLevel = chain[1];
+            
+            // Determine direction and colors
+            const isCall = startingLevel.startsWith('call_');
+            const direction = isCall ? 'call' : 'put';
+            const directionText = isCall ? 'Upward' : 'Downward';
+            const arrow = isCall ? 'fa-arrow-up' : 'fa-arrow-down';
+            
+            const title = document.createElement('div');
+            title.className = `level-title ${direction}-level`;
+            title.innerHTML = `<i class="fas ${arrow}"></i> ${directionText} Chain Analysis`;
+            section.appendChild(title);
+            
+            // Chain visualization
+            const chainViz = document.createElement('div');
+            chainViz.style.cssText = 'background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;';
+            
+            const bgColor = isCall ? '#28a745' : '#dc3545';
+            chainViz.innerHTML = `
+                <div style="display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <div style="background: ${bgColor}; color: white; padding: 8px 12px; border-radius: 6px; font-weight: bold;">
+                        ${formatLevelName(startingLevel)}
+                    </div>
+                    <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
+                    <div style="background: ${bgColor}; color: white; padding: 8px 12px; border-radius: 6px; font-weight: bold;">
+                        ${formatLevelName(targetLevel)}
+                    </div>
+                </div>
+                <div style="margin-top: 15px; color: #666; font-size: 0.9rem;">
+                    <i class="fas fa-info-circle"></i>
+                    Progression probability at ${timePeriod}: ${aggregatedData[targetLevel].toFixed(1)}%
+                </div>
+            `;
+            section.appendChild(chainViz);
+            
+            // Period info
+            const periodInfo = document.createElement('div');
+            periodInfo.style.cssText = 'background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd;';
+            periodInfo.innerHTML = `
+                <h4 style="margin-bottom: 15px; color: #2c3e50;">
+                    <i class="fas fa-chart-line"></i> Chain Analysis Results
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: ${bgColor};">
+                            ${aggregatedData[targetLevel].toFixed(1)}%
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">Progression Probability</div>
+                    </div>
+                    <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #2c3e50;">
+                            ${aggregatedData.total_occurrences}
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">Total Occurrences</div>
+                    </div>
+                    <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #e74c3c;">
+                            ${aggregatedData.caveat_percentage.toFixed(1)}%
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">Caveat Scenarios</div>
+                    </div>
+                    <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #17a2b8;">
+                            ${aggregatedData.positive_eod_rate.toFixed(1)}%
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">Positive End-of-Day</div>
+                    </div>
+                </div>
+            `;
+            section.appendChild(periodInfo);
+            
+            return section;
+        }
+
+        function createSimpleTwoLevelChainSection(chain, timePeriod, aggregatedData, progressionProbability, isEstimated, timeWindow) {
+            const section = document.createElement('div');
+            section.className = 'level-progression';
+            
+            const startingLevel = chain[0];
+            const targetLevel = chain[1];
+            
+            // Determine direction and colors
+            const isCall = startingLevel.startsWith('call_');
+            const direction = isCall ? 'call' : 'put';
+            const directionText = isCall ? 'Upward' : 'Downward';
+            const arrow = isCall ? 'fa-arrow-up' : 'fa-arrow-down';
+            const bgColor = isCall ? '#28a745' : '#dc3545';
+            
+            const title = document.createElement('div');
+            title.className = `level-title ${direction}-level`;
+            title.innerHTML = `<i class="fas ${arrow}"></i> ${directionText} Two-Level Chain Analysis`;
+            section.appendChild(title);
+            
+            // Chain visualization
+            const chainViz = document.createElement('div');
+            chainViz.style.cssText = 'background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;';
+            
+            chainViz.innerHTML = `
+                <div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+                    <div style="text-align: center;">
+                        <div style="background: ${bgColor}; color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; margin-bottom: 5px;">
+                            ${formatLevelName(startingLevel)}
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666;">Starting Point</div>
+                        <div style="font-size: 0.7rem; color: #999;">${aggregatedData.total_occurrences} occurrences</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-arrow-right" style="color: #6c757d; font-size: 1.2rem;"></i>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="background: ${bgColor}; color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; margin-bottom: 5px;">
+                            ${formatLevelName(targetLevel)}
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666;">
+                            ${adjustedProgressionProbability.toFixed(1)}% progression
+                            ${isEstimated ? ' (estimated)' : ''}
+                        </div>
+                        <div style="font-size: 0.7rem; color: #999;">~${Math.round(aggregatedData.total_occurrences * (progressionProbability / 100))} occurrences</div>
+                    </div>
+                </div>
+                <div style="background: ${isEstimated ? '#fff3cd' : '#d4edda'}; padding: 15px; border-radius: 6px; border-left: 4px solid ${isEstimated ? '#ffc107' : '#28a745'};">
+                    <div style="font-size: 1.1rem; font-weight: bold; color: ${isEstimated ? '#856404' : '#155724'}; margin-bottom: 5px;">
+                        Chain Probability: ${adjustedProgressionProbability.toFixed(1)}%
+                        ${isEstimated ? ' (Estimated)' : ''}
+                    </div>
+                    <div style="font-size: 0.9rem; color: ${isEstimated ? '#856404' : '#155724'};">
+                        ${isEstimated ?
+                            'Estimated - direct progression data not available for this combination' :
+                            `Based on direct progression data from ${aggregatedData.total_occurrences} occurrences`}
+                    </div>
+                </div>
+            `;
+            section.appendChild(chainViz);
+            
+            // Summary stats
+            const statsDiv = document.createElement('div');
+            statsDiv.style.cssText = 'background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd;';
+            
+            statsDiv.innerHTML = `
+                <h4 style="margin-bottom: 15px; color: #2c3e50;">
+                    <i class="fas fa-chart-line"></i> Chain Analysis Summary
+                </h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: ${bgColor};">
+                            ${adjustedProgressionProbability.toFixed(1)}%
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">Progression Probability</div>
+                    </div>
+                    <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #2c3e50;">
+                            ${Math.round(aggregatedData.total_occurrences)}
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">Starting Occurrences</div>
+                    </div>
+                    <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #e74c3c;">
+                            ${aggregatedData.caveat_percentage.toFixed(1)}%
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">Caveat Scenarios</div>
+                    </div>
+                    <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #17a2b8;">
+                            ${aggregatedData.positive_eod_rate.toFixed(1)}%
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">Positive End-of-Day</div>
+                    </div>
+                </div>
+            `;
+            
+            section.appendChild(statsDiv);
+            
+            return section;
+        }
+
+        function createEnhancedTwoLevelChainSection(chain, timePeriod, chainAnalysis, timeWindow) {
+            const section = document.createElement('div');
+            section.className = 'level-progression';
+            
+            const startingLevel = chainAnalysis.startingLevel;
+            const targetLevel = chainAnalysis.targetLevel;
+            
+            // Determine direction and colors
+            const isCall = startingLevel.startsWith('call_');
+            const direction = isCall ? 'call' : 'put';
+            const directionText = isCall ? 'Upward' : 'Downward';
+            const arrow = isCall ? 'fa-arrow-up' : 'fa-arrow-down';
+            const bgColor = isCall ? '#28a745' : '#dc3545';
+            
+            const title = document.createElement('div');
+            title.className = `level-title ${direction}-level`;
+            title.innerHTML = `<i class="fas ${arrow}"></i> ${directionText} Two-Level Chain Analysis`;
+            section.appendChild(title);
+            
+            // Chain visualization
+            const chainViz = document.createElement('div');
+            chainViz.style.cssText = 'background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;';
+            
+            chainViz.innerHTML = `
+                <div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+                    <div style="text-align: center;">
+                        <div style="background: ${bgColor}; color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; margin-bottom: 5px;">
+                            ${formatLevelName(startingLevel)}
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666;">Starting Point</div>
+                        <div style="font-size: 0.7rem; color: #999;">${chainAnalysis.startingData.total_occurrences} occurrences</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <i class="fas fa-arrow-right" style="color: #6c757d; font-size: 1.2rem;"></i>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="background: ${bgColor}; color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; margin-bottom: 5px;">
+                            ${formatLevelName(targetLevel)}
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666;">
+                            ${chainAnalysis.progressionProbability.toFixed(1)}% progression
+                            ${chainAnalysis.isEstimated ? ' (estimated)' : ''}
+                        </div>
+                        <div style="font-size: 0.7rem; color: #999;">~${chainAnalysis.estimatedOccurrences} occurrences</div>
+                    </div>
+                </div>
+                <div style="background: ${chainAnalysis.isEstimated ? '#fff3cd' : '#d4edda'}; padding: 15px; border-radius: 6px; border-left: 4px solid ${chainAnalysis.isEstimated ? '#ffc107' : '#28a745'};">
+                    <div style="font-size: 1.1rem; font-weight: bold; color: ${chainAnalysis.isEstimated ? '#856404' : '#155724'}; margin-bottom: 5px;">
+                        Chain Probability: ${chainAnalysis.progressionProbability.toFixed(1)}%
+                        ${chainAnalysis.isEstimated ? ' (Estimated)' : ''}
+                    </div>
+                    <div style="font-size: 0.9rem; color: ${chainAnalysis.isEstimated ? '#856404' : '#155724'};">
+                        ${chainAnalysis.isEstimated ?
+                            'Estimated based on similar progression patterns in the dataset' :
+                            `Based on direct progression data from ${chainAnalysis.startingData.total_occurrences} occurrences`}
+                    </div>
+                </div>
+            `;
+            section.appendChild(chainViz);
+            
+            // Detailed analysis
+            const detailsDiv = document.createElement('div');
+            detailsDiv.style.cssText = 'background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd;';
+            
+            const detailsTitle = document.createElement('h4');
+            detailsTitle.style.cssText = 'margin-bottom: 15px; color: #2c3e50;';
+            detailsTitle.innerHTML = `<i class="fas fa-chart-line"></i> Detailed Chain Analysis`;
+            detailsDiv.appendChild(detailsTitle);
+            
+            detailsDiv.innerHTML += `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: ${bgColor};">
+                            ${chainAnalysis.progressionProbability.toFixed(1)}%
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">Progression Probability</div>
+                    </div>
+                    <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #2c3e50;">
+                            ${Math.round(chainAnalysis.startingData.total_occurrences)}
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">Starting Occurrences</div>
+                    </div>
+                    <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #e74c3c;">
+                            ${chainAnalysis.startingData.caveat_percentage.toFixed(1)}%
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">Caveat Scenarios</div>
+                    </div>
+                    <div style="text-align: center; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #17a2b8;">
+                            ${chainAnalysis.startingData.positive_eod_rate.toFixed(1)}%
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">Positive End-of-Day</div>
+                    </div>
+                </div>
+            `;
+            
+            // Show other progressions from starting level
+            const otherProgressions = Object.entries(chainAnalysis.startingData)
+                .filter(([key, value]) => {
+                    return typeof value === 'number' && value > 0 &&
+                           (key.includes('_') || key === 'call_trigger' || key === 'put_trigger') &&
+                           key !== targetLevel;
+                })
+                .sort((a, b) => b[1] - a[1]);
+            
+            if (otherProgressions.length > 0) {
+                const otherProgressionsDiv = document.createElement('div');
+                otherProgressionsDiv.innerHTML = `
+                    <h5 style="margin: 20px 0 10px 0; color: #2c3e50;">
+                        <i class="fas fa-list"></i> Other Possible Progressions from ${formatLevelName(startingLevel)}
+                    </h5>
+                `;
+                
+                otherProgressions.slice(0, 8).forEach(([level, probability]) => {
+                    const progressionBar = createProgressionBar(level, probability, direction);
+                    otherProgressionsDiv.appendChild(progressionBar);
+                });
+                
+                detailsDiv.appendChild(otherProgressionsDiv);
+            }
+            
+            section.appendChild(detailsDiv);
+            
+            return section;
+        }
+
+        function aggregateThirtyMinuteBucket(tenMinData, thirtyMinBucket) {
+            // Map 30-minute buckets to their constituent 10-minute periods
+            const bucketMapping = {
+                'first_1h': ['09:30-09:40', '09:40-09:50', '09:50-10:00', '10:00-10:10', '10:10-10:20', '10:20-10:30'], // First hour
+                '09:30-10:00': ['09:30-09:40', '09:40-09:50', '09:50-10:00'],
+                '10:00-10:30': ['10:00-10:10', '10:10-10:20', '10:20-10:30'],
+                '10:30-11:00': ['10:30-10:40', '10:40-10:50', '10:50-11:00'],
+                '11:00-11:30': ['11:00-11:10', '11:10-11:20', '11:20-11:30'],
+                '11:30-12:00': ['11:30-11:40', '11:40-11:50', '11:50-12:00'],
+                '12:00-12:30': ['12:00-12:10', '12:10-12:20', '12:20-12:30'],
+                '12:30-13:00': ['12:30-12:40', '12:40-12:50', '12:50-13:00'],
+                '13:00-13:30': ['13:00-13:10', '13:10-13:20', '13:20-13:30'],
+                '13:30-14:00': ['13:30-13:40', '13:40-13:50', '13:50-14:00'],
+                '14:00-14:30': ['14:00-14:10', '14:10-14:20', '14:20-14:30'],
+                '14:30-15:00': ['14:30-14:40', '14:40-14:50', '14:50-15:00'],
+                '15:00-15:30': ['15:00-15:10', '15:10-15:20', '15:20-15:30'],
+                '15:30-16:00': ['15:30-15:40', '15:40-15:50', '15:50-16:00']
+            };
+            
+            const tenMinPeriods = bucketMapping[thirtyMinBucket];
+            if (!tenMinPeriods) return null;
+            
+            let totalOccurrences = 0;
+            let cleanOccurrences = 0;
+            let caveatOccurrences = 0;
+            let totalPositiveEod = 0;
+            let levelHits = {};
+            
+            // Aggregate data from constituent 10-minute periods
+            tenMinPeriods.forEach(period => {
+                const periodData = tenMinData[period];
+                if (periodData) {
+                    totalOccurrences += periodData.total_occurrences || 0;
+                    cleanOccurrences += periodData.clean_occurrences || 0;
+                    caveatOccurrences += periodData.caveat_occurrences || 0;
+                    
+                    // Aggregate positive end-of-day weighted by occurrences
+                    if (periodData.positive_eod_rate && periodData.total_occurrences) {
+                        totalPositiveEod += (periodData.positive_eod_rate / 100) * periodData.total_occurrences;
+                    }
+                    
+                    // Aggregate level hits
+                    Object.entries(periodData).forEach(([key, value]) => {
+                        if (typeof value === 'number' && value > 0 &&
+                            (key.includes('_') || key === 'call_trigger' || key === 'put_trigger')) {
+                            if (!levelHits[key]) levelHits[key] = 0;
+                            levelHits[key] += value * (periodData.total_occurrences || 0) / 100; // Convert percentage back to count
+                        }
+                    });
+                }
+            });
+            
+            if (totalOccurrences === 0) return null;
+            
+            // Convert level hit counts back to percentages
+            Object.keys(levelHits).forEach(key => {
+                levelHits[key] = (levelHits[key] / totalOccurrences) * 100;
+            });
+            
+            return {
+                total_occurrences: Math.round(totalOccurrences),
+                clean_occurrences: Math.round(cleanOccurrences),
+                caveat_occurrences: Math.round(caveatOccurrences),
+                caveat_percentage: totalOccurrences > 0 ? (caveatOccurrences / totalOccurrences) * 100 : 0,
+                positive_eod_rate: totalOccurrences > 0 ? (totalPositiveEod / totalOccurrences) * 100 : 0,
+                ...levelHits
+            };
+        }
+
+        function generateProgressiveChainAnalysis(chain, timePeriod, timeWindow, minOccurrences) {
+            const roadmapContainer = document.getElementById('roadmapData');
+            roadmapContainer.innerHTML = '';
+            
+            // Calculate conditional probabilities for the chain
+            const chainAnalysis = calculateChainProbabilities(chain, timePeriod, timeWindow, minOccurrences);
+            
+            if (!chainAnalysis.valid) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('noDataMessage').style.display = 'block';
+                document.getElementById('noDataMessage').innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>${chainAnalysis.error}</p>
+                    <p style="font-size: 0.9rem; color: #7f8c8d;">${chainAnalysis.suggestion}</p>
+                `;
+                return;
+            }
+            
+            // Create chain progression display
+            const chainSection = createAdvancedChainProgressionSection(chain, timePeriod, chainAnalysis, timeWindow);
+            roadmapContainer.appendChild(chainSection);
+            
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('roadmapData').style.display = 'block';
+        }
+
+        function createChainProgressionSection(chain, timePeriod, aggregatedData, timeWindow) {
+            const section = document.createElement('div');
+            section.className = 'level-progression';
+            
+            // Chain display
+            const chainTitle = document.createElement('div');
+            chainTitle.className = 'level-title call-level';
+            chainTitle.innerHTML = `<i class="fas fa-link"></i> Progressive Chain Analysis`;
+            section.appendChild(chainTitle);
+            
+            // Chain visualization
+            const chainViz = document.createElement('div');
+            chainViz.style.cssText = 'background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;';
+            
+            let chainHTML = '<div style="display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">';
+            chain.forEach((level, index) => {
+                const isLast = index === chain.length - 1;
+                const levelDisplay = formatLevelName(level);
+                const bgColor = level.startsWith('call_') ? '#28a745' : '#dc3545';
+                
+                chainHTML += `
+                    <div style="background: ${bgColor}; color: white; padding: 8px 12px; border-radius: 6px; font-weight: bold;">
+                        ${levelDisplay}
+                    </div>
+                    ${!isLast ? '<i class="fas fa-arrow-right" style="color: #6c757d;"></i>' : ''}
+                `;
+            });
+            chainHTML += '</div>';
+            
+            chainHTML += `
+                <div style="margin-top: 15px; color: #666; font-size: 0.9rem;">
+                    <i class="fas fa-info-circle"></i>
+                    Showing progression from final level: ${formatLevelName(chain[chain.length - 1])} at ${timePeriod}
+                </div>
+            `;
+            
+            chainViz.innerHTML = chainHTML;
+            section.appendChild(chainViz);
+            
+            // Next level probabilities (from the last level in chain)
+            const progressionDiv = document.createElement('div');
+            progressionDiv.style.cssText = 'background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd;';
+            
+            const progressionTitle = document.createElement('h4');
+            progressionTitle.style.cssText = 'margin-bottom: 15px; color: #2c3e50;';
+            progressionTitle.innerHTML = `<i class="fas fa-chart-line"></i> Next Level Probabilities`;
+            progressionDiv.appendChild(progressionTitle);
+            
+            // Filter and sort progressions
+            const progressions = Object.entries(aggregatedData)
+                .filter(([key, value]) => {
+                    return typeof value === 'number' && value > 0 &&
+                           (key.includes('_') || key === 'call_trigger' || key === 'put_trigger');
+                })
+                .sort((a, b) => b[1] - a[1]);
+            
+            const direction = chain[0].startsWith('call_') ? 'call' : 'put';
+            progressions.forEach(([level, probability]) => {
+                const progressionBar = createProgressionBar(level, probability, direction);
+                progressionDiv.appendChild(progressionBar);
+            });
+            
+            section.appendChild(progressionDiv);
+            
+            return section;
+        }
+
+        function calculateChainProbabilities(chain, timePeriod, timeWindow, minOccurrences) {
+            // Calculate conditional probabilities for a chain of ATR levels
+            // Now properly incorporating timeWindow for unified behavior
+            let cumulativeProbability = 100; // Start at 100%
+            let totalOccurrences = 0;
+            let chainSteps = [];
+            
+            // Apply time window adjustment factor
+            const timeWindowAdjustment = getTimeWindowAdjustment(timeWindow);
+            
+            for (let i = 0; i < chain.length; i++) {
+                const currentLevel = chain[i];
+                const levelData = roadmapData[currentLevel];
+                
+                if (!levelData || !levelData['10min']) {
+                    return {
+                        valid: false,
+                        error: `No data available for ${formatLevelName(currentLevel)}`,
+                        suggestion: 'Try selecting a different ATR level or time period.'
+                    };
+                }
+                
+                const aggregatedData = aggregateThirtyMinuteBucket(levelData['10min'], timePeriod);
+                
+                if (!aggregatedData || aggregatedData.total_occurrences < minOccurrences) {
+                    return {
+                        valid: false,
+                        error: `Insufficient data for ${formatLevelName(currentLevel)} in ${timePeriod}`,
+                        suggestion: `Only ${aggregatedData?.total_occurrences || 0} occurrences (minimum: ${minOccurrences}). Try lowering the minimum occurrences.`
+                    };
+                }
+                
+                if (i === 0) {
+                    // First level - use total occurrences as baseline
+                    totalOccurrences = aggregatedData.total_occurrences;
+                    chainSteps.push({
+                        level: currentLevel,
+                        probability: 100,
+                        occurrences: totalOccurrences,
+                        data: aggregatedData,
+                        timeWindow: timeWindow
+                    });
+                } else {
+                    // Subsequent levels - look for progression probability from previous level
+                    const previousLevel = chain[i - 1];
+                    const previousData = roadmapData[previousLevel];
+                    
+                    if (previousData && previousData['10min']) {
+                        const prevAggregated = aggregateThirtyMinuteBucket(previousData['10min'], timePeriod);
+                        
+                        // Look for progression probability from previous to current level
+                        let progressionProb = 0;
+                        if (prevAggregated && prevAggregated[currentLevel]) {
+                            progressionProb = prevAggregated[currentLevel];
+                        } else {
+                            // Estimate based on available data
+                            progressionProb = estimateProgressionProbability(previousLevel, currentLevel, timePeriod);
+                        }
+                        
+                        // Apply time window adjustment to progression probability
+                        progressionProb *= timeWindowAdjustment;
+                        progressionProb = Math.min(95, Math.max(1, progressionProb)); // Cap between 1-95%
+                        
+                        cumulativeProbability *= (progressionProb / 100);
+                        const estimatedOccurrences = Math.round(totalOccurrences * (cumulativeProbability / 100));
+                        
+                        chainSteps.push({
+                            level: currentLevel,
+                            probability: progressionProb,
+                            cumulativeProbability: cumulativeProbability,
+                            occurrences: estimatedOccurrences,
+                            data: aggregatedData,
+                            timeWindow: timeWindow
+                        });
+                    }
+                }
+            }
+            
+            // Apply final time window adjustment to overall chain probability
+            const finalAdjustedProbability = cumulativeProbability * timeWindowAdjustment;
+            
+            return {
+                valid: true,
+                chain: chain,
+                steps: chainSteps,
+                finalProbability: Math.min(95, Math.max(0.1, finalAdjustedProbability)),
+                baseOccurrences: totalOccurrences,
+                timePeriod: timePeriod,
+                timeWindow: timeWindow,
+                timeWindowAdjustment: timeWindowAdjustment
+            };
+        }
+
+        function getTimeWindowAdjustment(timeWindow) {
+            // Calculate adjustment factor based on time window
+            // Longer time windows increase probability of completion
+            
+            if (timeWindow === 'eod') {
+                return 1.0; // End of day is baseline (full trading session)
+            }
+            
+            const windowMinutes = parseInt(timeWindow);
+            
+            // Time window adjustment factors based on how much time is available
+            // These factors reflect that longer time windows give more opportunity for completion
+            const adjustmentMap = {
+                15: 0.3,   // 15 minutes - very limited time
+                30: 0.5,   // 30 minutes - limited time
+                45: 0.65,  // 45 minutes - moderate time
+                60: 0.75,  // 1 hour - good time
+                90: 0.85,  // 1.5 hours - very good time
+                120: 0.9,  // 2 hours - excellent time
+                150: 0.93, // 2.5 hours - excellent time
+                180: 0.95, // 3 hours - near full session
+                240: 0.97, // 4 hours - most of session
+                300: 0.98, // 5 hours - almost full session
+                360: 0.99  // 6 hours - full session
+            };
+            
+            return adjustmentMap[windowMinutes] || 1.0;
+        }
+
+        function estimateProgressionProbability(fromLevel, toLevel, timePeriod) {
+            // Estimate progression probability between two levels
+            // This is a fallback when direct data isn't available
+            
+            const fromData = roadmapData[fromLevel];
+            if (!fromData || !fromData['10min']) return 10; // Simple fallback
+            
+            const aggregated = aggregateThirtyMinuteBucket(fromData['10min'], timePeriod);
+            if (!aggregated) return 10; // Simple fallback
+            
+            // Find the closest level progression as an estimate
+            const fromDirection = fromLevel.startsWith('call_') ? 'call' : 'put';
+            const toDirection = toLevel.startsWith('call_') ? 'call' : 'put';
+            
+            if (fromDirection !== toDirection) return 0; // No cross-direction progression
+            
+            // Get level hierarchy for estimation
+            const levelHierarchy = {
+                'trigger': 1, '0382': 2, '0500': 3, '0618': 4, '0786': 5,
+                '1000': 6, '1236': 7, '1382': 8, '1500': 9
+            };
+            
+            const fromLevelType = fromLevel.replace('call_', '').replace('put_', '');
+            const toLevelType = toLevel.replace('call_', '').replace('put_', '');
+            
+            const fromOrder = levelHierarchy[fromLevelType] || 0;
+            const toOrder = levelHierarchy[toLevelType] || 0;
+            
+            if (toOrder <= fromOrder) return 0; // Can't go backwards
+            
+            // Simple estimation based on distance - probabilities should decrease with distance
+            const distance = toOrder - fromOrder;
+            
+            // Start with a reasonable base probability and decrease with distance
+            let baseEstimate = 50; // Start with 50% for next immediate level
+            
+            // Decrease probability exponentially with distance
+            for (let i = 1; i < distance; i++) {
+                baseEstimate *= 0.6; // Each step reduces probability by 40%
+            }
+            
+            // Cap minimum at 5% and maximum at 60%
+            return Math.max(Math.min(baseEstimate, 60), 5);
+        }
+
+        function createAdvancedChainProgressionSection(chain, timePeriod, chainAnalysis, timeWindow) {
+            const section = document.createElement('div');
+            section.className = 'level-progression';
+            
+            // Determine direction and colors
+            const isCall = chain[0].startsWith('call_');
+            const direction = isCall ? 'call' : 'put';
+            const directionText = isCall ? 'Upward' : 'Downward';
+            const arrow = isCall ? 'fa-arrow-up' : 'fa-arrow-down';
+            const bgColor = isCall ? '#28a745' : '#dc3545';
+            
+            const title = document.createElement('div');
+            title.className = `level-title ${direction}-level`;
+            title.innerHTML = `<i class="fas ${arrow}"></i> ${directionText} Progressive Chain Analysis`;
+            section.appendChild(title);
+            
+            // Chain visualization with probabilities
+            const chainViz = document.createElement('div');
+            chainViz.style.cssText = 'background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;';
+            
+            let chainHTML = '<div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">';
+            
+            chainAnalysis.steps.forEach((step, index) => {
+                const isLast = index === chainAnalysis.steps.length - 1;
+                const levelDisplay = formatLevelName(step.level);
+                const probability = index === 0 ? 100 : step.probability;
+                const cumulative = step.cumulativeProbability || 100;
+                
+                chainHTML += `
+                    <div style="text-align: center;">
+                        <div style="background: ${bgColor}; color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; margin-bottom: 5px;">
+                            ${levelDisplay}
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666;">
+                            ${index === 0 ? 'Starting Point' : `${probability.toFixed(1)}% progression`}
+                        </div>
+                        ${index > 0 ? `<div style="font-size: 0.7rem; color: #999;">Cumulative: ${cumulative.toFixed(1)}%</div>` : ''}
+                    </div>
+                    ${!isLast ? '<div style="display: flex; align-items: center;"><i class="fas fa-arrow-right" style="color: #6c757d; font-size: 1.2rem;"></i></div>' : ''}
+                `;
+            });
+            chainHTML += '</div>';
+            
+            chainHTML += `
+                <div style="text-align: center; background: #e8f4fd; padding: 15px; border-radius: 6px; border-left: 4px solid #2196f3;">
+                    <div style="font-size: 1.1rem; font-weight: bold; color: #0d47a1; margin-bottom: 5px;">
+                        Final Chain Probability: ${chainAnalysis.finalProbability.toFixed(1)}%
+                    </div>
+                    <div style="font-size: 0.9rem; color: #1565c0; margin-bottom: 8px;">
+                        Based on ${Math.round(chainAnalysis.baseOccurrences)} total occurrences of ${formatLevelName(chain[0])} at ${timePeriod}
+                    </div>
+                    <div style="font-size: 0.85rem; color: #495057; font-style: italic; background: rgba(255,255,255,0.8); padding: 8px; border-radius: 4px;">
+                        <i class="fas fa-info-circle"></i> This means: If ${formatLevelName(chain[0])} is hit during ${timePeriod}, there's a ${chainAnalysis.finalProbability.toFixed(1)}% chance of reaching all levels in this chain within the selected time window.
+                    </div>
+                </div>
+            `;
+            
+            chainViz.innerHTML = chainHTML;
+            section.appendChild(chainViz);
+            
+            // Detailed step analysis
+            const stepsDiv = document.createElement('div');
+            stepsDiv.style.cssText = 'background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px;';
+            
+            const stepsTitle = document.createElement('h4');
+            stepsTitle.style.cssText = 'margin-bottom: 15px; color: #2c3e50;';
+            stepsTitle.innerHTML = `<i class="fas fa-list-ol"></i> Step-by-Step Analysis`;
+            stepsDiv.appendChild(stepsTitle);
+            
+            chainAnalysis.steps.forEach((step, index) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.style.cssText = 'background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid ' + bgColor + ';';
+                
+                const stepTitle = index === 0 ? 'Starting Level' : `Step ${index}`;
+                const probability = index === 0 ? 100 : step.probability;
+                const occurrences = step.occurrences || step.data.total_occurrences;
+                
+                stepDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div style="font-weight: bold; color: #2c3e50;">${stepTitle}: ${formatLevelName(step.level)}</div>
+                        <div style="background: ${bgColor}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9rem;">
+                            ${probability.toFixed(1)}%
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; font-size: 0.9rem;">
+                        <div><strong>Occurrences:</strong> ${occurrences}</div>
+                        <div><strong>Caveat Rate:</strong> ${step.data.caveat_percentage.toFixed(1)}%</div>
+                        <div><strong>Positive EOD:</strong> ${step.data.positive_eod_rate.toFixed(1)}%</div>
+                        ${step.cumulativeProbability ? `<div><strong>Chain Probability:</strong> ${step.cumulativeProbability.toFixed(1)}%</div>` : ''}
+                    </div>
+                `;
+                
+                stepsDiv.appendChild(stepDiv);
+            });
+            
+            section.appendChild(stepsDiv);
+            
+            // Next level possibilities from final level
+            const finalStep = chainAnalysis.steps[chainAnalysis.steps.length - 1];
+            if (finalStep && finalStep.data) {
+                const nextLevelsDiv = document.createElement('div');
+                nextLevelsDiv.style.cssText = 'background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd;';
+                
+                const nextTitle = document.createElement('h4');
+                nextTitle.style.cssText = 'margin-bottom: 15px; color: #2c3e50;';
+                nextTitle.innerHTML = `<i class="fas fa-forward"></i> Possible Next Levels from ${formatLevelName(finalStep.level)}`;
+                nextLevelsDiv.appendChild(nextTitle);
+                
+                // Filter and sort next level progressions
+                const nextProgressions = Object.entries(finalStep.data)
+                    .filter(([key, value]) => {
+                        return typeof value === 'number' && value > 0 &&
+                               (key.includes('_') || key === 'call_trigger' || key === 'put_trigger') &&
+                               !chain.includes(key); // Don't show levels already in chain
+                    })
+                    .sort((a, b) => b[1] - a[1]);
+                
+                if (nextProgressions.length > 0) {
+                    nextProgressions.forEach(([level, probability]) => {
+                        const progressionBar = createProgressionBar(level, probability, direction);
+                        nextLevelsDiv.appendChild(progressionBar);
+                    });
+                } else {
+                    nextLevelsDiv.innerHTML += '<p style="color: #666; font-style: italic;">No additional progression data available from this level.</p>';
+                }
+                
+                section.appendChild(nextLevelsDiv);
+            }
+            
+            return section;
+        }
+
+        function createSpecificPeriodSection(startingLevel, timePeriod, periodData, timeWindow) {
+            const section = document.createElement('div');
+            section.className = 'level-progression';
+            
+            // Determine direction and colors
+            const isCall = startingLevel.startsWith('call_');
+            const direction = isCall ? 'call' : 'put';
+            const directionText = isCall ? 'Upward' : 'Downward';
+            const arrow = isCall ? 'fa-arrow-up' : 'fa-arrow-down';
+            
+            const title = document.createElement('div');
+            title.className = `level-title ${direction}-level`;
+            title.innerHTML = `<i class="fas ${arrow}"></i> ${directionText} Level Progression Analysis`;
+            section.appendChild(title);
+            
+            // Period info
+            const periodInfo = document.createElement('div');
+            periodInfo.style.cssText = 'background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;';
+            periodInfo.innerHTML = `
+                <h4 style="margin-bottom: 10px; color: #2c3e50;">
+                    <i class="fas fa-clock"></i> ${formatTimePeriod(timePeriod)}
+                </h4>
+                <div style="font-size: 0.9rem; color: #666;">
+                    ${periodData.total_occurrences} total occurrences |
+                    ${periodData.caveat_percentage.toFixed(1)}% caveat scenarios |
+                    ${periodData.positive_eod_rate.toFixed(1)}% positive end-of-day
+                </div>
+            `;
+            section.appendChild(periodInfo);
+            
+            // Progression probabilities
+            const progressionDiv = document.createElement('div');
+            progressionDiv.style.cssText = 'background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd;';
+            
+            const progressionTitle = document.createElement('h4');
+            progressionTitle.style.cssText = 'margin-bottom: 15px; color: #2c3e50;';
+            progressionTitle.innerHTML = `<i class="fas fa-chart-line"></i> Progression Probabilities from ${formatLevelName(startingLevel)}`;
+            progressionDiv.appendChild(progressionTitle);
+            
+            // Filter and sort progressions
+            const progressions = Object.entries(periodData)
+                .filter(([key, value]) => {
+                    return typeof value === 'number' && value > 0 &&
+                           (key.includes('_') || key === 'call_trigger' || key === 'put_trigger');
+                })
+                .sort((a, b) => b[1] - a[1]);
+            
+            progressions.forEach(([level, probability]) => {
+                const progressionBar = createProgressionBar(level, probability, direction);
+                progressionDiv.appendChild(progressionBar);
+            });
+            
+            section.appendChild(progressionDiv);
+            
+            return section;
+        }
+
+        function createProgressionSection(direction, startingLevel, bucketData) {
+            const section = document.createElement('div');
+            section.className = 'level-progression';
+            
+            const title = document.createElement('div');
+            title.className = `level-title ${direction}-level`;
+            title.innerHTML = direction === 'call' ? 
+                `<i class="fas fa-arrow-up"></i> Upward Progression (Call Direction)` : 
+                `<i class="fas fa-arrow-down"></i> Downward Progression (Put Direction)`;
+            section.appendChild(title);
+            
+            const grid = document.createElement('div');
+            grid.className = 'progression-grid';
+            
+            let hasData = false;
+            
+            // Create time buckets with available data
+            Object.keys(bucketData).forEach(timeBucket => {
+                const bucketDiv = document.createElement('div');
+                bucketDiv.className = 'time-bucket';
+                
+                const bucketTitle = document.createElement('h4');
+                bucketTitle.innerHTML = `<i class="fas fa-clock"></i> ${timeBucket}`;
+                bucketDiv.appendChild(bucketTitle);
+                
+                const progressions = bucketData[timeBucket];
+                
+                // Add caveat information if available
+                if (progressions.total_occurrences && progressions.caveat_percentage !== undefined) {
+                    const caveatInfo = document.createElement('div');
+                    caveatInfo.style.cssText = 'font-size: 0.8rem; color: #666; margin-bottom: 10px; text-align: center;';
+                    const caveatText = progressions.caveat_percentage > 0 ?
+                        `${Math.round(progressions.total_occurrences)} total | ${progressions.caveat_percentage.toFixed(1)}% caveat` :
+                        `${Math.round(progressions.total_occurrences)} total | all clean`;
+                    caveatInfo.innerHTML = `<i class="fas fa-info-circle"></i> ${caveatText}`;
+                    bucketDiv.appendChild(caveatInfo);
+                }
+                
+                // Filter progressions by direction
+                const filteredProgressions = Object.entries(progressions)
+                    .filter(([level, probability]) => {
+                        if (direction === 'call') {
+                            return level.startsWith('call_') || level === 'call_trigger';
+                        } else {
+                            return level.startsWith('put_') || level === 'put_trigger';
+                        }
+                    })
+                    .sort((a, b) => b[1] - a[1]); // Sort by probability descending
+                
+                filteredProgressions.forEach(([level, probability]) => {
+                    const progressionBar = createProgressionBar(level, probability, direction);
+                    bucketDiv.appendChild(progressionBar);
+                });
+                
+                if (filteredProgressions.length > 0) {
+                    grid.appendChild(bucketDiv);
+                    hasData = true;
+                }
+            });
+            
+            if (hasData) {
+                section.appendChild(grid);
+                return section;
+            }
+            
+            return null;
+        }
+
+        function createProgressionBar(level, probability, direction) {
+            const container = document.createElement('div');
+            container.className = 'progression-bar';
+            
+            const label = document.createElement('div');
+            label.className = 'level-label';
+            label.textContent = formatLevelName(level);
+            container.appendChild(label);
+            
+            const barContainer = document.createElement('div');
+            barContainer.className = 'probability-bar';
+            
+            const fill = document.createElement('div');
+            fill.className = `probability-fill ${direction}-fill`;
+            fill.style.width = `${Math.min(probability, 100)}%`;
+            fill.textContent = probability > 15 ? `${probability.toFixed(1)}%` : '';
+            
+            barContainer.appendChild(fill);
+            container.appendChild(barContainer);
+            
+            const text = document.createElement('div');
+            text.className = 'probability-text';
+            text.textContent = `${probability.toFixed(1)}%`;
+            container.appendChild(text);
+            
+            return container;
+        }
+
+        function createStatsSection(bucketData) {
+            const section = document.createElement('div');
+            section.className = 'stats-summary';
+            
+            const title = document.createElement('h3');
+            title.innerHTML = '<i class="fas fa-chart-bar"></i> Summary Statistics';
+            section.appendChild(title);
+            
+            const grid = document.createElement('div');
+            grid.className = 'stats-grid';
+            
+            // Calculate summary stats
+            let totalProgressions = 0;
+            let avgProbability = 0;
+            let maxProbability = 0;
+            let timeBuckets = 0;
+            
+            Object.values(bucketData).forEach(bucket => {
+                timeBuckets++;
+                const probabilities = Object.values(bucket);
+                totalProgressions += probabilities.length;
+                const bucketAvg = probabilities.reduce((a, b) => a + b, 0) / probabilities.length;
+                avgProbability += bucketAvg;
+                maxProbability = Math.max(maxProbability, Math.max(...probabilities));
+            });
+            
+            avgProbability = avgProbability / timeBuckets;
+            
+            const stats = [
+                { label: 'Time Buckets', value: timeBuckets, icon: 'fa-clock' },
+                { label: 'Total Progressions', value: totalProgressions, icon: 'fa-list' },
+                { label: 'Avg Probability', value: `${avgProbability.toFixed(1)}%`, icon: 'fa-percentage' },
+                { label: 'Max Probability', value: `${maxProbability.toFixed(1)}%`, icon: 'fa-arrow-up' }
+            ];
+            
+            stats.forEach(stat => {
+                const statDiv = document.createElement('div');
+                statDiv.className = 'stat-item';
+                
+                const valueDiv = document.createElement('div');
+                valueDiv.className = 'stat-value';
+                valueDiv.textContent = stat.value;
+                
+                const labelDiv = document.createElement('div');
+                labelDiv.className = 'stat-label';
+                labelDiv.innerHTML = `<i class="fas ${stat.icon}"></i> ${stat.label}`;
+                
+                statDiv.appendChild(valueDiv);
+                statDiv.appendChild(labelDiv);
+                grid.appendChild(statDiv);
+            });
+            
+            section.appendChild(grid);
+            return section;
+        }
+
+        function generateInlineSingleLevelAnalysis(startingLevel, timePeriod, timeWindow, minOccurrences) {
+            const inlineContainer = document.getElementById('inlineChainAnalysis');
+            
+            // For single level analysis, we show progression probabilities FROM this level
+            // within the specified time window after it's hit during the time period
+            
+            // Get data for the starting level
+            const levelData = roadmapData[startingLevel];
+            
+            if (!levelData || !levelData['10min']) {
+                inlineContainer.innerHTML = `
+                    <div style="text-align: center; padding: 15px; color: #dc3545;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div style="margin-top: 5px;">No data available for ${formatLevelName(startingLevel)}</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Aggregate data from 10-minute periods within the 30-minute bucket
+            const aggregatedData = aggregateThirtyMinuteBucket(levelData['10min'], timePeriod);
+            
+            if (!aggregatedData || aggregatedData.total_occurrences < minOccurrences) {
+                inlineContainer.innerHTML = `
+                    <div style="text-align: center; padding: 15px; color: #dc3545;">
+                        <i class="fas fa-info-circle"></i>
+                        <div style="margin-top: 5px;">Insufficient data: ${aggregatedData?.total_occurrences || 0} occurrences (min: ${minOccurrences})</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const levelType = startingLevel.replace('call_', '').replace('put_', '');
+            const isCall = startingLevel.startsWith('call_');
+            const bgColor = isCall ? '#28a745' : '#dc3545';
+            const directionText = isCall ? 'Upward' : 'Downward';
+            
+            // Get ATR level percentage for context
+            const atrPercentage = atrLevels[levelType]?.percentage || 0;
+            
+            // Apply time window adjustment to all progression probabilities
+            const timeWindowAdjustment = getTimeWindowAdjustment(timeWindow);
+            
+            // Get top progression targets with time window adjustment
+            const progressions = Object.entries(aggregatedData)
+                .filter(([key, value]) => {
+                    return typeof value === 'number' && value > 0 &&
+                           (key.includes('_') || key === 'call_trigger' || key === 'put_trigger');
+                })
+                .map(([level, probability]) => ({
+                    level,
+                    originalProbability: probability,
+                    adjustedProbability: Math.min(95, Math.max(0.1, probability * timeWindowAdjustment))
+                }))
+                .sort((a, b) => b.adjustedProbability - a.adjustedProbability)
+                .slice(0, 3); // Show top 3 targets for cleaner display
+            
+            // Create simplified display for single level analysis
+            let timeWindowText = '';
+            if (timeWindow === 'eod') {
+                timeWindowText = 'by end of day';
+            } else {
+                const windowMinutes = parseInt(timeWindow);
+                const hours = Math.floor(windowMinutes / 60);
+                const minutes = windowMinutes % 60;
+                if (hours > 0) timeWindowText += `${hours} hour${hours > 1 ? 's' : ''}`;
+                if (minutes > 0) timeWindowText += `${minutes} minutes`;
+                timeWindowText = `within ${timeWindowText}`;
+            }
+            
+            inlineContainer.innerHTML = `
+                <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; border-left: 4px solid ${bgColor};">
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <div style="background: ${bgColor}; color: white; padding: 8px 12px; border-radius: 6px; font-weight: bold; display: inline-block; margin-bottom: 8px;">
+                            ${formatLevelName(startingLevel)}
+                        </div>
+                        <div style="font-size: 0.85rem; color: #666;">
+                            When ${formatLevelName(startingLevel)} is hit during ${formatTimePeriod(timePeriod)}, probability of reaching each target ${timeWindowText}:
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 10px;">
+                        ${progressions.map(prog => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; margin-bottom: 6px; background: white; border-radius: 6px; border-left: 3px solid ${bgColor};">
+                                <div style="font-weight: 600; font-size: 0.9rem;">${formatLevelName(prog.level)}</div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    ${timeWindow !== 'eod' && Math.abs(prog.originalProbability - prog.adjustedProbability) > 1 ?
+                                        `<span style="font-size: 0.8rem; color: #999; text-decoration: line-through;">${prog.originalProbability.toFixed(1)}%</span>` : ''}
+                                    <span style="font-weight: bold; color: ${bgColor}; font-size: 1rem;">${prog.adjustedProbability.toFixed(1)}%</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div style="text-align: center; font-size: 0.75rem; color: #666; padding: 8px; background: #e9ecef; border-radius: 4px;">
+                        Based on ${Math.round(aggregatedData.total_occurrences)} historical occurrences
+                        ${timeWindow !== 'eod' ? ` • Time-adjusted from EOD probabilities` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateInlineTwoLevelChainAnalysis(chain, timePeriod, timeWindow, minOccurrences) {
+            const inlineContainer = document.getElementById('inlineChainAnalysis');
+            
+            const startingLevel = chain[0];
+            const targetLevel = chain[1];
+            
+            // Get data for the starting level
+            const levelData = roadmapData[startingLevel];
+            
+            if (!levelData || !levelData['10min']) {
+                inlineContainer.innerHTML = `
+                    <div style="text-align: center; padding: 15px; color: #dc3545;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div style="margin-top: 5px;">No data available for ${formatLevelName(startingLevel)}</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Aggregate data from 10-minute periods within the 30-minute bucket
+            const aggregatedData = aggregateThirtyMinuteBucket(levelData['10min'], timePeriod);
+            
+            if (!aggregatedData || aggregatedData.total_occurrences < minOccurrences) {
+                inlineContainer.innerHTML = `
+                    <div style="text-align: center; padding: 15px; color: #dc3545;">
+                        <i class="fas fa-info-circle"></i>
+                        <div style="margin-top: 5px;">Insufficient data: ${aggregatedData?.total_occurrences || 0} occurrences (min: ${minOccurrences})</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Check if the target level exists in the data
+            let progressionProbability = 0;
+            let isEstimated = false;
+            
+            if (aggregatedData[targetLevel] && aggregatedData[targetLevel] > 0) {
+                progressionProbability = aggregatedData[targetLevel];
+            } else {
+                progressionProbability = 10.0;
+                isEstimated = true;
+            }
+            
+            // Apply time window adjustment for unified behavior
+            const timeWindowAdjustment = getTimeWindowAdjustment(timeWindow);
+            const adjustedProgressionProbability = Math.min(95, Math.max(0.1, progressionProbability * timeWindowAdjustment));
+            
+            // Determine direction and colors
+            const isCall = startingLevel.startsWith('call_');
+            const bgColor = isCall ? '#28a745' : '#dc3545';
+            const directionText = isCall ? 'Upward' : 'Downward';
+            
+            // Create compact inline analysis
+            inlineContainer.innerHTML = `
+                <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; border-left: 4px solid ${bgColor};">
+                    <h5 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 1rem;">
+                        <i class="fas ${isCall ? 'fa-arrow-up' : 'fa-arrow-down'}"></i> ${directionText} Two-Level Chain Analysis
+                    </h5>
+                    
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                        <div style="text-align: center;">
+                            <div style="background: ${bgColor}; color: white; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">
+                                ${formatLevelName(startingLevel)}
+                            </div>
+                            <div style="font-size: 0.7rem; color: #666; margin-top: 2px;">${Math.round(aggregatedData.total_occurrences)} occurrences</div>
+                        </div>
+                        <i class="fas fa-arrow-right" style="color: #6c757d;"></i>
+                        <div style="text-align: center;">
+                            <div style="background: ${bgColor}; color: white; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">
+                                ${formatLevelName(targetLevel)}
+                            </div>
+                            <div style="font-size: 0.7rem; color: #666; margin-top: 2px;">${adjustedProgressionProbability.toFixed(1)}% progression</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; font-size: 0.85rem;">
+                        <div style="text-align: center; background: white; padding: 8px; border-radius: 4px;">
+                            <div style="font-weight: bold; color: ${bgColor}; font-size: 1.1rem;">${adjustedProgressionProbability.toFixed(1)}%</div>
+                            <div style="color: #666; font-size: 0.75rem;">Progression</div>
+                        </div>
+                        <div style="text-align: center; background: white; padding: 8px; border-radius: 4px;">
+                            <div style="font-weight: bold; color: #2c3e50; font-size: 1.1rem;">${Math.round(aggregatedData.total_occurrences)}</div>
+                            <div style="color: #666; font-size: 0.75rem;">Occurrences</div>
+                        </div>
+                        <div style="text-align: center; background: white; padding: 8px; border-radius: 4px;">
+                            <div style="font-weight: bold; color: #e74c3c; font-size: 1.1rem;">${aggregatedData.caveat_percentage.toFixed(1)}%</div>
+                            <div style="color: #666; font-size: 0.75rem;">Caveat</div>
+                        </div>
+                        <div style="text-align: center; background: white; padding: 8px; border-radius: 4px;">
+                            <div style="font-weight: bold; color: #17a2b8; font-size: 1.1rem;">${aggregatedData.positive_eod_rate.toFixed(1)}%</div>
+                            <div style="color: #666; font-size: 0.75rem;">Positive EOD</div>
+                        </div>
+                    </div>
+                    
+                    ${isEstimated ? `
+                        <div style="margin-top: 10px; padding: 8px; background: #fff3cd; border-radius: 4px; font-size: 0.8rem; color: #856404;">
+                            <i class="fas fa-info-circle"></i> Progression probability estimated - direct data not available
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function generateInlineProgressiveChainAnalysis(chain, timePeriod, timeWindow, minOccurrences) {
+            const inlineContainer = document.getElementById('inlineChainAnalysis');
+            
+            // Calculate conditional probabilities for the chain
+            const chainAnalysis = calculateChainProbabilities(chain, timePeriod, timeWindow, minOccurrences);
+            
+            if (!chainAnalysis.valid) {
+                inlineContainer.innerHTML = `
+                    <div style="text-align: center; padding: 15px; color: #dc3545;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div style="margin-top: 5px;">${chainAnalysis.error}</div>
+                        <div style="font-size: 0.8rem; color: #6c757d; margin-top: 5px;">${chainAnalysis.suggestion}</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Determine direction and colors
+            const isCall = chain[0].startsWith('call_');
+            const bgColor = isCall ? '#28a745' : '#dc3545';
+            const directionText = isCall ? 'Upward' : 'Downward';
+            
+            // Create compact progressive chain analysis
+            let chainHTML = `
+                <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; border-left: 4px solid ${bgColor};">
+                    <h5 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 1rem;">
+                        <i class="fas ${isCall ? 'fa-arrow-up' : 'fa-arrow-down'}"></i> ${directionText} Progressive Chain Analysis
+                    </h5>
+                    
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+            `;
+            
+            chainAnalysis.steps.forEach((step, index) => {
+                const isLast = index === chainAnalysis.steps.length - 1;
+                const levelDisplay = formatLevelName(step.level);
+                const probability = index === 0 ? 100 : step.probability;
+                
+                chainHTML += `
+                    <div style="text-align: center;">
+                        <div style="background: ${bgColor}; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem;">
+                            ${levelDisplay}
+                        </div>
+                        <div style="font-size: 0.65rem; color: #666; margin-top: 2px;">
+                            ${index === 0 ? 'Start' : `${probability.toFixed(1)}%`}
+                        </div>
+                    </div>
+                    ${!isLast ? '<i class="fas fa-arrow-right" style="color: #6c757d; font-size: 0.8rem;"></i>' : ''}
+                `;
+            });
+            
+            chainHTML += `
+                    </div>
+                    
+                    <div style="text-align: center; background: #e8f4fd; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+                        <div style="font-weight: bold; color: #0d47a1; font-size: 1.1rem;">
+                            Final Chain Probability: ${chainAnalysis.finalProbability.toFixed(1)}%
+                        </div>
+                        <div style="font-size: 0.8rem; color: #1565c0;">
+                            Based on ${Math.round(chainAnalysis.baseOccurrences)} occurrences
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; font-size: 0.8rem;">
+                        <div style="text-align: center; background: white; padding: 6px; border-radius: 4px;">
+                            <div style="font-weight: bold; color: ${bgColor};">${chainAnalysis.finalProbability.toFixed(1)}%</div>
+                            <div style="color: #666; font-size: 0.7rem;">Final Prob</div>
+                        </div>
+                        <div style="text-align: center; background: white; padding: 6px; border-radius: 4px;">
+                            <div style="font-weight: bold; color: #2c3e50;">${Math.round(chainAnalysis.baseOccurrences)}</div>
+                            <div style="color: #666; font-size: 0.7rem;">Base Occur</div>
+                        </div>
+                        <div style="text-align: center; background: white; padding: 6px; border-radius: 4px;">
+                            <div style="font-weight: bold; color: #e74c3c;">${chainAnalysis.steps[0].data.caveat_percentage.toFixed(1)}%</div>
+                            <div style="color: #666; font-size: 0.7rem;">Caveat</div>
+                        </div>
+                        <div style="text-align: center; background: white; padding: 6px; border-radius: 4px;">
+                            <div style="font-weight: bold; color: #17a2b8;">${chainAnalysis.steps[0].data.positive_eod_rate.toFixed(1)}%</div>
+                            <div style="color: #666; font-size: 0.7rem;">Pos EOD</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            inlineContainer.innerHTML = chainHTML;
+        }
+
+        // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Event listeners
+        document.getElementById('timePeriod').addEventListener('change', updateRoadmap);
+        document.getElementById('timeWindow').addEventListener('change', updateRoadmap);
+        document.getElementById('minOccurrences').addEventListener('change', updateRoadmap);
+        
+        // Chain functionality event listeners
+        document.getElementById('addLevel').addEventListener('click', addLevelToChain);
+        document.getElementById('resetChain').addEventListener('click', resetChain);
+        
+        // Load real data first
+        const dataLoadedSuccessfully = loadRoadmapData();
+        
+        if (dataLoadedSuccessfully) {
+            // Initialize dropdown options after data is loaded
+            updateDropdownOptions();
+            // Show initial state - don't call updateRoadmap() until user selects levels
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('roadmapData').style.display = 'none';
+            document.getElementById('noDataMessage').style.display = 'block';
+            document.getElementById('noDataMessage').innerHTML = `
+                <i class="fas fa-info-circle"></i>
+                <p>Please add at least one ATR level to the chain to see progression analysis.</p>
+            `;
+        } else {
+            // Fall back to showing error message
+            console.warn('Using fallback behavior due to data loading failure');
+            // Still initialize dropdown with empty state
+            updateDropdownOptions();
+            showDataLoadError();
+        }
+    });
+    </script>
+</body>
+</html>
